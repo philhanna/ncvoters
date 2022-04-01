@@ -1,4 +1,3 @@
-import os
 import tempfile
 from http import HTTPStatus
 
@@ -14,7 +13,7 @@ class Downloader:
         """ Creates a Downloader instance """
         self.source = source
         self.tmp = tempfile.gettempdir()
-        self.zipfile = os.path.join(self.tmp, ZIP_FILE_NAME)
+        self.zipfile = ZIP_FILE_NAME
         self.zipfile_size = None
 
     def run(self):
