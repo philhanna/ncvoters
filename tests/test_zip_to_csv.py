@@ -1,3 +1,4 @@
+import io
 from unittest import TestCase
 import os.path
 from zipfile import ZipFile
@@ -15,9 +16,16 @@ def create_zipfile():
     zipfile = os.path.join(TMP, "stooges.zip")
     with ZipFile(zipfile, mode="w") as archive:
         archive.write(stooges, "stooges.txt")
+    return zipfile
 
 
 class TestZipToCSV(TestCase):
 
     def test_dummy(self):
-        create_zipfile()
+        zipfile = create_zipfile()
+        with ZipFile(zipfile) as zf:
+            with io.TextIOWrapper(zf.open("stooges.txt"), encoding="utf-8") as fp:
+                line_count = 0
+                for line in fp:
+                    line_count += 1
+        self.assertEqual(4, line_count)
