@@ -21,7 +21,7 @@ def create_zipfile():
 
 class TestZipToCSV(TestCase):
 
-    def test_dummy(self):
+    def test_create(self):
         zipfile = create_zipfile()
         with ZipFile(zipfile) as zf:
             with io.TextIOWrapper(zf.open("stooges.txt"), encoding="utf-8") as fp:
@@ -29,3 +29,11 @@ class TestZipToCSV(TestCase):
                 for line in fp:
                     line_count += 1
         self.assertEqual(4, line_count)
+
+    def test_get_filename(self):
+        zipfile = create_zipfile()
+        with ZipFile(zipfile) as zf:
+            list_of_names = zf.namelist()
+        self.assertEqual(1, len(list_of_names))
+        filename = list_of_names[0]
+        self.assertEqual("stooges.txt", filename)
