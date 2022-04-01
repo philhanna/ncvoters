@@ -20,6 +20,7 @@ def create_zipfile():
 
 
 class TestZipToCSV(TestCase):
+    """" This class is used solely for research into how certain functions work """
 
     def test_create(self):
         zipfile = create_zipfile()
