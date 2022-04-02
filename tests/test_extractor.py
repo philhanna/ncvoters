@@ -17,6 +17,10 @@ class TestExtractor(TestCase):
         outrow = Extractor.select_columns(row, column_list)
         self.assertListEqual(['baker', 'charlie'], outrow)
 
-    def test_run(self):
+    def test_get_run(self):
         extractor = Extractor()
-        extractor.run(limit=5)
+        expected = 10
+        actual = 0
+        for row in extractor.get_rows(limit=expected):
+            actual += 1
+        self.assertEqual(expected, actual)

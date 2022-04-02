@@ -12,7 +12,7 @@ class Extractor:
         self.zip_file_name = zipfile
         self.internal_file_name = filename
 
-    def run(self, limit=0):
+    def get_rows(self, limit=0):
         with zipfile.ZipFile(self.zip_file_name) as archive:
             with archive.open(self.internal_file_name, "r") as fp:
 
@@ -26,7 +26,7 @@ class Extractor:
 
                     # Select only certain columns
                     outrow = Extractor.select_columns(row)
-                    print(outrow)
+                    yield outrow
 
     @staticmethod
     def select_columns(row, column_list=COLUMNS.keys()):
