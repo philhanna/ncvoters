@@ -26,6 +26,6 @@ COLUMNS = {
     28 : "party_cd",
     29 : "gender_code",
     30 : "birth_year",
-    31 : "birth_age",
+    31 : "age_at_year_end",
     32 : "birth_state",
 }
