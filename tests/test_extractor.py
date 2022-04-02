@@ -14,7 +14,7 @@ class TestExtractor(TestCase):
             "able", "baker", "charlie", "dog", "easy", "foxtrot", "gamma"
         ]
         column_list = [1, 2]
-        outrow = Extractor.select_columns(row, column_list)
+        outrow = [row[x] for x in column_list]
         self.assertListEqual(['baker', 'charlie'], outrow)
 
     def test_get_run(self):
