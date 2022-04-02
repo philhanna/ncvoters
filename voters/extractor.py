@@ -12,7 +12,7 @@ class Extractor:
         self.zip_file_name = zipfile
         self.internal_file_name = filename
 
-    def get_rows(self, limit=0):
+    def get_rows(self, limit=None):
         """ A generator that returns rows filtered by column list """
         with zipfile.ZipFile(self.zip_file_name) as archive:
             with archive.open(self.internal_file_name, "r") as fp:
@@ -22,7 +22,7 @@ class Extractor:
                 count = 0
                 for row in reader:
                     count += 1
-                    if limit != 0 and count > limit:
+                    if limit and count > limit:
                         break
 
                     # Select only certain columns
