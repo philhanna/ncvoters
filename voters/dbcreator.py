@@ -1,4 +1,5 @@
 import os
+import sqlite3
 
 from voters import DB_FILE_NAME, COLUMNS
 
@@ -14,7 +15,7 @@ class DBCreator:
         max_name_width = DBCreator.max_width()
         name_list = [x for x in COLUMNS.values()]
 
-        sql = "CREATE TABLE ncvoters(\n"
+        sql = "CREATE TABLE voters(\n"
         for i in range(ncols):
             name = name_list[i]
             padded_name = name.ljust(max_name_width, ' ')
@@ -33,5 +34,10 @@ class DBCreator:
         self.filename = filename
 
     def run(self):
-        if os.path.exists(self.filename):
-            os.remove(self.filename)
+        """ Creates the empty SQLite3 database """
+        outfile = self.filename
+        if os.path.exists(outfile):
+            os.remove(outfile)
+        sql = DBCreator.create_schema()
+        with sqlite3.connect(outfile) as con:
+            con.execute(sql)
