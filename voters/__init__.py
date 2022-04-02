@@ -4,6 +4,7 @@ import tempfile
 DATA_SOURCE_URL = "https://s3.amazonaws.com/dl.ncsbe.gov/data/ncvoter_Statewide.zip"
 ZIP_FILE_NAME = os.path.join(tempfile.gettempdir(), "ncvoter_Statewide.zip")
 ZIP_CHUNK_SIZE = 2**24
+ENCODING = "iso8859"
 COLUMNS = {
     0 : "county_id",
     2 : "voter_reg_num",

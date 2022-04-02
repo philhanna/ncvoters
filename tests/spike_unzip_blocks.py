@@ -3,7 +3,7 @@ import io
 import unittest
 import zipfile
 
-from voters import ZIP_FILE_NAME
+from voters import ZIP_FILE_NAME, ENCODING
 
 
 class MyTestCase(unittest.TestCase):
@@ -11,7 +11,7 @@ class MyTestCase(unittest.TestCase):
         expected = 8538323
         with zipfile.ZipFile(ZIP_FILE_NAME) as zipf:
             with zipf.open("ncvoter_Statewide.txt", "r") as f:
-                reader = csv.reader(io.TextIOWrapper(f, encoding="iso8859"), delimiter='\t')
+                reader = csv.reader(io.TextIOWrapper(f, encoding=ENCODING), delimiter='\t')
                 count = 0
                 for row in reader:
                     count += 1
