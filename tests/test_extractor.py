@@ -7,7 +7,7 @@ from voters.extractor import Extractor
 class TestExtractor(TestCase):
 
     def test_columns(self):
-        self.assertEqual(18, len(COLUMNS))
+        self.assertEqual(20, len(COLUMNS))
 
     def test_select_columns(self):
         row = [
@@ -16,3 +16,7 @@ class TestExtractor(TestCase):
         column_list = [1, 2]
         outrow = Extractor.select_columns(row, column_list)
         self.assertListEqual(['baker', 'charlie'], outrow)
+
+    def test_run(self):
+        extractor = Extractor()
+        extractor.run(limit=5)
