@@ -1,5 +1,6 @@
 import csv
 import io
+import re
 import zipfile
 
 from voters import ZIP_FILE_NAME, TEXT_FILE_NAME, ENCODING, COLUMNS
@@ -13,6 +14,7 @@ class Extractor:
         self.internal_file_name = filename
 
     def get_rows(self, limit=None):
+        regexp = re.compile('\s\s+')
         """ A generator that returns rows filtered by column list """
         with zipfile.ZipFile(self.zip_file_name) as archive:
             with archive.open(self.internal_file_name, "r") as fp:
@@ -27,5 +29,8 @@ class Extractor:
 
                     # Select only certain columns
                     outrow = [row[column] for column in COLUMNS.keys()]
+                    for i in range(len(outrow)):
+                        field = regexp.sub(' ', outrow[i]).rstrip()
+                        outrow[i] = field
                     yield outrow
 
