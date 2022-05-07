@@ -1,12 +1,12 @@
 """ Creates the latest version of the database """
 
-from voters import Downloader, DBCreator, DBLoader, timer
+from voters import ZipDownloader, DBCreator, DBLoader, timer
 
 
 # Download the .zip file
 @timer
 def step_1():
-    downloader = Downloader()
+    downloader = ZipDownloader()
     downloader.run()
 
 
