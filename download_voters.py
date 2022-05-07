@@ -1,42 +1,38 @@
 """ Creates the latest version of the database """
-import logging
-import time
 
-from voters import Downloader, DBCreator, DBLoader
+from voters import Downloader, DBCreator, DBLoader, timer
 
-# Start logging to the console
-logging.basicConfig(format='%(asctime)s %(message)s', level=logging.INFO)
-
-
-job_time_start = time.time()
 
 # Download the .zip file
-logging.info("Starting download")
-stime = time.time()
-downloader = Downloader()
-downloader.run()
-etime = time.time()
-elapsed = etime - stime
-logging.info(f"Finished download, elapsed time = {elapsed}")
+@timer
+def step_1():
+    downloader = Downloader()
+    downloader.run()
+
 
 # Create an empty voter database
-logging.info("Creating empty database")
-stime = time.time()
-creator = DBCreator()
-creator.run()
-etime = time.time()
-elapsed = etime - stime
-logging.info(f"Database created, elapsed time = {elapsed}")
+@timer
+def step_2():
+    creator = DBCreator()
+    creator.run()
+
 
 # Load rows into the new database
-logging.info("Loading database from zip file")
-stime = time.time()
-loader = DBLoader()
-loader.run()
-etime = time.time()
-elapsed = etime - stime
-logging.info(f"Done loading database, elapsed time = {elapsed}")
+@timer
+def step_3():
+    loader = DBLoader()
+    loader.run()
 
-job_time_end = time.time()
-elapsed = job_time_end - job_time_start
-logging.info(f"Total time elapsed = {elapsed}")
+
+@timer
+def main():
+    step_1()
+    step_2()
+    step_3()
+
+
+#   ============================================================
+#   Mainline
+#   ============================================================
+if __name__ == '__main__':
+    main()
