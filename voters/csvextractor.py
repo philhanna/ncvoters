@@ -22,7 +22,7 @@ class CSVExtractor:
         """ A generator that returns rows filtered by the list
         of columns from __init__.py.  The first row, which contains
         the column names, is automatically ignored. """
-        regexp = re.compile('\s\s+')
+        regexp = re.compile(r'\s\s+')
         with zipfile.ZipFile(self.zip_file_name) as archive:
             with archive.open(self.internal_file_name, "r") as fp:
 
@@ -41,7 +41,8 @@ class CSVExtractor:
                     # Select only certain columns
                     outrow = [row[column] for column in COLUMNS.keys()]
                     for i in range(len(outrow)):
-                        field = regexp.sub(' ', outrow[i]).rstrip()
-                        outrow[i] = field
+                        if regexp.search(outrow[i]):
+                            field = regexp.sub(' ', outrow[i]).rstrip()
+                            outrow[i] = field
                     yield outrow
 

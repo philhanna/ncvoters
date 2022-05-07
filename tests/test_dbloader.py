@@ -9,7 +9,7 @@ class TestDBLoader(TestCase):
     def test_create_insert_stmt(self):
         print(DBLoader.create_insert_stmt())
 
-    @skipIf(True, "Do not load first 100 rows")
+    @skip("Do not load first 100 rows")
     def test_load_100(self):
         """ Creates a sample database from the first 100 rows in the CSV file. """
         creator = DBCreator()
