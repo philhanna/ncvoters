@@ -9,6 +9,7 @@ __all__ = {
     'DATA_SOURCE_URL',
     'ZIP_FILE_NAME',
     'TEXT_FILE_NAME',
+    'ZIP_CHUNK_SIZE',
     'ENCODING',
     'COLUMNS'
 }
