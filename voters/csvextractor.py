@@ -41,7 +41,7 @@ class CSVExtractor:
                     # Select only certain columns
                     outrow = [row[column] for column in COLUMNS.keys()]
                     for i in range(len(outrow)):
-                        if regexp.search(outrow[i]):
+                        if regexp.search(outrow[i]) or outrow[i].endswith(' '):
                             field = regexp.sub(' ', outrow[i]).rstrip()
                             outrow[i] = field
                     yield outrow
