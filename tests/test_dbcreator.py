@@ -1,8 +1,7 @@
 import os
 from unittest import TestCase, skip
 
-from voters import DB_FILE_NAME
-from voters.dbcreator import DBCreator
+from voters import DBCreator, DB_FILE_NAME
 
 
 class TestDBCreator(TestCase):

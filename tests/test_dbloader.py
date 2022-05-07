@@ -1,7 +1,6 @@
 from unittest import TestCase, skipIf, skip
 
-from voters.dbcreator import DBCreator
-from voters.dbloader import DBLoader
+from voters import DBLoader, DBCreator
 
 
 class TestDBLoader(TestCase):
@@ -10,8 +9,9 @@ class TestDBLoader(TestCase):
     def test_create_insert_stmt(self):
         print(DBLoader.create_insert_stmt())
 
-    @skip("Do not load first 100 rows")
+    @skipIf(False, "Do not load first 100 rows")
     def test_load_100(self):
+        """ Creates a sample database from the first 100 rows in the CSV file. """
         creator = DBCreator()
         creator.run()
         DBLoader.run(limit=100)

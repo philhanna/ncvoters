@@ -6,11 +6,11 @@ import requests
 from voters import ZIP_FILE_NAME, DATA_SOURCE_URL, ZIP_CHUNK_SIZE
 
 
-class Downloader:
+class ZipDownloader:
     """ Downloads the latest zip file from the NC state elections website """
 
     def __init__(self, source=DATA_SOURCE_URL):
-        """ Creates a Downloader instance """
+        """ Creates a ZipDownloader instance """
         self.source = source
         self.tmp = tempfile.gettempdir()
         self.zipfile = ZIP_FILE_NAME

@@ -1,7 +1,6 @@
 import sqlite3
 
-from voters import ZIP_FILE_NAME, DB_FILE_NAME, COLUMNS
-from voters.extractor import Extractor
+from voters import ZIP_FILE_NAME, DB_FILE_NAME, COLUMNS, CSVExtractor
 
 
 class DBLoader:
@@ -23,13 +22,9 @@ class DBLoader:
     def run(limit=None):
         """ Loads rows into database """
         insert_stmt = DBLoader.create_insert_stmt()
-        extractor = Extractor()
+        extractor = CSVExtractor()
         with sqlite3.connect(DB_FILE_NAME) as con:
             cur = con.cursor()
-            gotfirst = False
             for row in extractor.get_rows(limit=limit):
-                if not gotfirst:
-                    gotfirst = True
-                    continue
                 cur.execute(insert_stmt, row)
             con.commit()

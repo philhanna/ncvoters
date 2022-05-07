@@ -1,7 +1,6 @@
 from unittest import TestCase
 
-from voters import COLUMNS
-from voters.extractor import Extractor
+from voters import COLUMNS, CSVExtractor
 
 
 class TestExtractor(TestCase):
@@ -17,8 +16,8 @@ class TestExtractor(TestCase):
         outrow = [row[x] for x in column_list]
         self.assertListEqual(['baker', 'charlie'], outrow)
 
-    def test_get_run(self):
-        extractor = Extractor()
+    def test_get_rows_with_limit(self):
+        extractor = CSVExtractor()
         expected = 10
         actual = 0
         for row in extractor.get_rows(limit=expected):

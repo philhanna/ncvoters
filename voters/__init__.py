@@ -3,8 +3,8 @@ import tempfile
 
 __all__ = {
     'timer',
-    'Downloader',
-    'Extractor',
+    'ZipDownloader',
+    'CSVExtractor',
     'DBCreator',
     'DBLoader',
     'DATA_SOURCE_URL',
@@ -61,7 +61,7 @@ COLUMNS = {
     32: "birth_state",
 }
 
-from .downloader import Downloader
-from .extractor import Extractor
+from .zipdownloader import ZipDownloader
+from .csvextractor import CSVExtractor
 from .dbcreator import DBCreator
 from .dbloader import DBLoader
