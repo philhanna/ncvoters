@@ -32,7 +32,8 @@ class CSVExtractor:
                 for row in reader:
                     count += 1
                     if count == 1:      # Skip the column header row
-                        limit += 1
+                        if limit:
+                            limit += 1
                         continue
                     if limit and count > limit:
                         break
