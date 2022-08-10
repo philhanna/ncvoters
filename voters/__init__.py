@@ -2,7 +2,6 @@ import os.path
 import tempfile
 
 __all__ = {
-    'timer',
     'ZipDownloader',
     'CSVExtractor',
     'DBCreator',
@@ -15,22 +14,6 @@ __all__ = {
     'ENCODING',
     'COLUMNS'
 }
-
-
-def timer(fn):
-    """ Decorator to find execution time for a function """
-    from time import perf_counter
-
-    def inner(*args, **kwargs):
-        start_time = perf_counter()
-        result = fn(*args, **kwargs)
-        end_time = perf_counter()
-        elapsed_time = end_time - start_time
-        print(f"{fn.__name__} took {elapsed_time:.8f} seconds to execute")
-        return result
-
-    return inner
-
 
 DATA_SOURCE_URL = "https://s3.amazonaws.com/dl.ncsbe.gov/data/ncvoter_Statewide.zip"
 TEXT_FILE_NAME = "ncvoter_Statewide.txt"
