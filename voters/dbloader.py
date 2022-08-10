@@ -1,6 +1,6 @@
 import sqlite3
 
-from voters import ZIP_FILE_NAME, DB_FILE_NAME, COLUMNS, CSVExtractor
+from voters import DB_FILE_NAME, COLUMNS, CSVExtractor
 
 
 class DBLoader:
