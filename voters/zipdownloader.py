@@ -1,3 +1,5 @@
+import logging
+import os
 import tempfile
 from http import HTTPStatus
 
@@ -18,6 +20,10 @@ class ZipDownloader:
 
     def run(self):
         """ Downloads the zip file """
+        if os.path.exists(self.zipfile):
+            logging.info(f"Using existing zip file {self.zipfile}")
+            return
+        logging.info(f"start, source={self.source}")
 
         # Make an HTTP request for the source zip file
         resp = requests.get(self.source, stream=True)
@@ -30,5 +36,8 @@ class ZipDownloader:
             total_bytes = 0
             for chunk in resp.iter_content(chunk_size=ZIP_CHUNK_SIZE):
                 total_bytes += len(chunk)
+                logging.info(f"{total_bytes=:,}")
                 fp.write(chunk)
         self.zipfile_size = total_bytes
+
+        logging.info(f"end, {total_bytes=:,}")

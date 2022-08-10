@@ -1,3 +1,4 @@
+import logging
 import sqlite3
 
 from voters import DB_FILE_NAME, COLUMNS, CSVExtractor
@@ -21,6 +22,7 @@ class DBLoader:
     @staticmethod
     def run(limit=None):
         """ Loads rows into database """
+        logging.info(f"start")
         insert_stmt = DBLoader.create_insert_stmt()
         extractor = CSVExtractor()
         with sqlite3.connect(DB_FILE_NAME) as con:
@@ -28,3 +30,4 @@ class DBLoader:
             for row in extractor.get_rows(limit=limit):
                 cur.execute(insert_stmt, row)
             con.commit()
+        logging.info(f"end, count={extractor.count:,}")
