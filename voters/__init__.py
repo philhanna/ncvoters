@@ -1,7 +1,7 @@
+import logging
 import os.path
 import sys
 import tempfile
-import logging
 
 logging.basicConfig(level=logging.INFO,
                     format="%(levelname)s %(asctime)s %(module)s:%(lineno)d %(funcName)s() %(message)s",
