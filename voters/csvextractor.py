@@ -19,13 +19,14 @@ class CSVExtractor:
         self.zip_file_name = zipfile
         self.internal_file_name = filename
         self.count = 0
+        self.regexp = re.compile(r'\s+')
 
     def get_rows(self, limit=None):
         """ A generator that returns rows filtered by the list
         of columns from __init__.py.  The first row, which contains
         the column names, is automatically ignored. """
-        regexp = re.compile(r'\s\s+')
 
+        regexp = self.regexp
         with zipfile.ZipFile(self.zip_file_name) as archive:
             with archive.open(self.internal_file_name, "r") as fp:
 
@@ -36,7 +37,7 @@ class CSVExtractor:
                     self.count += 1
                     if self.count % 1000000 == 0:
                         logging.info(f"count={self.count:,}")
-                    if self.count == 1:      # Skip the column header row
+                    if self.count == 1:  # Skip the column header row
                         if limit:
                             limit += 1
                         continue
@@ -44,10 +45,10 @@ class CSVExtractor:
                         break
 
                     # Select only certain columns
-                    outrow = [row[column] for column in COLUMNS.keys()]
+                    outrow: list[str] = [row[column] for column in COLUMNS.keys()]
                     for i in range(len(outrow)):
-                        if regexp.search(outrow[i]) or outrow[i].endswith(' '):
-                            field = regexp.sub(' ', outrow[i]).rstrip()
+                        field = outrow[i]
+                        if regexp.search(field):
+                            field = regexp.sub(" ", field).strip()
                             outrow[i] = field
                     yield outrow
-

@@ -1,13 +1,5 @@
-import logging
 import os.path
-import sys
 import tempfile
-
-logging.basicConfig(level=logging.INFO,
-                    format="%(levelname)s %(asctime)s %(module)s:%(lineno)d %(funcName)s() %(message)s",
-                    datefmt="%H:%M:%S")
-ch = logging.StreamHandler(stream=sys.stdout)
-ch.flush()
 
 __all__ = {
     'ZipDownloader',
