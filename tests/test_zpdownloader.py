@@ -26,17 +26,12 @@ class TestDownloader(TestCase):
 
     def test_run_with_ten_voters(self):
 
-        # The output will be a file in /tmp
-        zipfile = os.path.join(TMP, "ten_voters.zip")
-        if os.path.exists(zipfile):
-            os.remove(zipfile)
-
         class ZipLocal(ZipDownloader):
             """Subclass of ZipDownloader that lets me override
             the ``read_chunks`` method so that it reads/writes
             locally with a small file"""
 
-            def __init__(self, source=None, zipfile=zipfile):
+            def __init__(self, source=None, zipfile=None):
                 super().__init__(source, zipfile)
 
             def read_chunks(self):
@@ -49,19 +44,22 @@ class TestDownloader(TestCase):
                         if not chunk:
                             break
                         yield chunk
-                pass
 
-        app = ZipLocal(zipfile=zipfile)
+        # The output will be a zip file in /tmp
+        zipfile_in_tmp = os.path.join(TMP, "ten_voters.zip")
+        if os.path.exists(zipfile_in_tmp):
+            os.remove(zipfile_in_tmp)
+
+        app = ZipLocal(zipfile=zipfile_in_tmp)
         app.run()
 
         # Unzip the generated .zip file
-        with ZipFile(os.path.join(TMP, "ten_voters.zip")) as myzip:
+        with ZipFile(zipfile_in_tmp) as myzip:
             myzip.extract("ten_voters.txt", path=TMP)
 
         file1 = os.path.join(TMP, "ten_voters.txt")
         file2 = os.path.join(testdata, "ten_voters.txt")
 
         self.assertTrue(filecmp.cmp(file1, file2))
-        os.path.join(TMP, "ten_voters.zip")
+        os.remove(zipfile_in_tmp)
         os.remove(file1)
-        os.remove(file2)
