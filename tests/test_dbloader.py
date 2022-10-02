@@ -5,9 +5,18 @@ from voters import DBLoader, DBCreator
 
 class TestDBLoader(TestCase):
 
-    @skipIf(True, "Only for debug")
     def test_create_insert_stmt(self):
-        print(DBLoader.create_insert_stmt())
+        stmt = DBLoader.create_insert_stmt()
+
+        # Should be only one line
+        expected = 1
+        actual = len(stmt.splitlines())
+        self.assertEqual(expected, actual)
+
+        # Line should start with "INSERT "
+        expected = True
+        actual = stmt.startswith("INSERT ")
+        self.assertEqual(expected, actual)
 
     @skip("Do not load first 100 rows")
     def test_load_100(self):
