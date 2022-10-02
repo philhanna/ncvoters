@@ -63,3 +63,19 @@ class TestDownloader(TestCase):
         self.assertTrue(filecmp.cmp(file1, file2))
         os.remove(zipfile_in_tmp)
         os.remove(file1)
+
+    def test_real_download_first_record(self):
+        app = ZipDownloader()
+        for chunk in app.read_chunks():
+            actual = chunk[:4]
+            expected = b'PK\x03\x04'
+            self.assertEqual(expected, actual)
+            break
+
+    def test_real_download_first_record_bogus(self):
+        with self.assertRaises(RuntimeError) as ex:
+            app = ZipDownloader(source="https://www.cnn.com/bogus")
+            for chunk in app.read_chunks():
+                break
+        output = str(ex.exception)
+        self.assertIn("HTTP status 404", output)
