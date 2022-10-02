@@ -1,11 +1,10 @@
 import logging
 import os
-import tempfile
 from http import HTTPStatus
 
 import requests
 
-from voters import ZIP_FILE_NAME, DATA_SOURCE_URL, ZIP_CHUNK_SIZE
+from voters import ZIP_FILE_NAME, DATA_SOURCE_URL, ZIP_CHUNK_SIZE, TMP
 
 
 class ZipDownloader:
@@ -14,7 +13,7 @@ class ZipDownloader:
     def __init__(self, source=DATA_SOURCE_URL):
         """ Creates a ZipDownloader instance """
         self.source = source
-        self.tmp = tempfile.gettempdir()
+        self.tmp = TMP
         self.zipfile = ZIP_FILE_NAME
         self.zipfile_size = None
 
