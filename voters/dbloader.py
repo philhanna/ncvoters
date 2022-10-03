@@ -20,12 +20,12 @@ class DBLoader:
         return sql
 
     @staticmethod
-    def run(limit=None):
+    def run(limit=None, db_file_name=DB_FILE_NAME):
         """ Loads rows into database """
         logging.info(f"start")
         insert_stmt = DBLoader.create_insert_stmt()
         extractor = CSVExtractor()
-        with sqlite3.connect(DB_FILE_NAME) as con:
+        with sqlite3.connect(db_file_name) as con:
             cur = con.cursor()
             for row in extractor.get_rows(limit=limit):
                 cur.execute(insert_stmt, row)

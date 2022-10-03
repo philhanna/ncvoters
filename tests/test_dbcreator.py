@@ -11,10 +11,10 @@ class TestDBCreator(TestCase):
         actual = DBCreator.max_width()
         self.assertEqual(expected, actual)
 
-    @skip("For debugging only")
     def test_create_schema(self):
-        sql = DBCreator.create_schema()
-        print(sql)
+        stmt = DBCreator.create_schema()
+        self.assertTrue(stmt.startswith("CREATE TABLE voters"))
+        self.assertIn("birth_state", stmt)
 
     def test_run(self):
         creator = DBCreator()

@@ -1,6 +1,8 @@
+import os
+import sqlite3
 from unittest import TestCase, skipIf, skip
 
-from voters import DBLoader, DBCreator
+from voters import DBLoader, DBCreator, TMP
 
 
 class TestDBLoader(TestCase):
@@ -18,15 +20,33 @@ class TestDBLoader(TestCase):
         actual = stmt.startswith("INSERT ")
         self.assertEqual(expected, actual)
 
-    @skip("Do not load first 100 rows")
-    def test_load_100(self):
-        """ Creates a sample database from the first 100 rows in the CSV file. """
-        creator = DBCreator()
-        creator.run()
-        DBLoader.run(limit=100)
+    def test_create_small_db(self):
+        # Make a database file name in /tmp
+        db_file_name = os.path.join(TMP, "small.db")
+        if os.path.exists(db_file_name):
+            os.remove(db_file_name)
 
-    @skip("Do not load the whole database")
-    def test_load_all(self):
-        creator = DBCreator()
+        # Create the small database with just the table definitions,
+        # not any rows of data
+        creator = DBCreator(filename=db_file_name)
         creator.run()
-        DBLoader.run()
+
+        # Now load ten records from the actual network source
+        DBLoader.run(limit=10, db_file_name=db_file_name)
+
+        # The database now should contain ten records in the "voters" table
+        with sqlite3.connect(db_file_name) as con:
+            c = con.cursor()
+            c.execute("select count(*) from voters;")
+            rows = c.fetchall()
+
+            expected = 1
+            actual = len(rows)
+            self.assertEqual(expected, actual)
+
+            expected = 10
+            actual = int(rows[0][0])
+            self.assertEqual(expected, actual)
+
+        # Delete the database file if the tests were successful
+        os.remove(db_file_name)
