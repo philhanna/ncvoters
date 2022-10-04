@@ -1,5 +1,5 @@
 import os
-from unittest import TestCase, skip
+from unittest import TestCase
 
 from voters import DBCreator, DB_FILE_NAME
 

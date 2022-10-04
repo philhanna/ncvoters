@@ -23,7 +23,7 @@ class TestExtractor(TestCase):
         self.assertListEqual(['baker', 'charlie'], outrow)
 
     def test_get_rows_with_limit(self):
-        extractor = CSVExtractor(filename=self.filename,zipfile=self.zipfile)
+        extractor = CSVExtractor(filename=self.filename, zipfile=self.zipfile)
         expected = 4
         actual = 0
         for row in extractor.get_rows(limit=expected):

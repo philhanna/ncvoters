@@ -36,7 +36,7 @@ class DBCreator:
         for i in range(ncols):
             name = name_list[i]
             padded_name = name.ljust(max_name_width, ' ')
-            comma = "," if i < ncols-1 else ""
+            comma = "," if i < ncols - 1 else ""
             buffer = f"    {padded_name}  TEXT{comma}" + "\n"
             sql += buffer
         sql += ");"

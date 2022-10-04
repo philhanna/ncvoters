@@ -1,11 +1,10 @@
-import os.path
 import filecmp
-import subprocess
+import os.path
 from unittest import TestCase
 from zipfile import ZipFile
 
 from tests import testdata
-from voters import ZIP_FILE_NAME, ZipDownloader, TMP, ZIP_CHUNK_SIZE
+from voters import ZIP_FILE_NAME, ZipDownloader, TMP
 
 
 class TestDownloader(TestCase):
@@ -16,7 +15,7 @@ class TestDownloader(TestCase):
         self.assertEqual(ext, ".zip")
 
     def test_run_file_size(self):
-        zipfile = os.path.join(testdata, "ten_voters.zip" )
+        zipfile = os.path.join(testdata, "ten_voters.zip")
         app = ZipDownloader(zipfile)
         app.zipfile_size = os.path.getsize(zipfile)
         app.run()

@@ -1,8 +1,11 @@
+#! /usr/bin/python
+
 """ Creates the latest version of the database """
 import logging
 import sys
 
 from voters import ZipDownloader, DBCreator, DBLoader
+
 
 def timer(fn):
     """ Decorator to find execution time for a function """
@@ -59,4 +62,3 @@ def main():
 #   ============================================================
 if __name__ == '__main__':
     main()
-

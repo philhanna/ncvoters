@@ -1,7 +1,8 @@
 import os
 import sqlite3
-from unittest import TestCase, skipIf, skip
+from unittest import TestCase
 
+from tests import testdata
 from voters import DBLoader, DBCreator, TMP
 
 
@@ -22,6 +23,9 @@ class TestDBLoader(TestCase):
 
     def test_create_small_db(self):
         # Make a database file name in /tmp
+
+        filename = "ten_voters.txt"
+        zipfile = os.path.join(testdata, "ten_voters.zip")
         db_file_name = os.path.join(TMP, "small.db")
         if os.path.exists(db_file_name):
             os.remove(db_file_name)
@@ -31,8 +35,9 @@ class TestDBLoader(TestCase):
         creator = DBCreator(filename=db_file_name)
         creator.run()
 
-        # Now load ten records from the actual network source
-        DBLoader.run(limit=10, db_file_name=db_file_name)
+        # Now load a few records from the actual network source
+        loader = DBLoader(filename=filename, zipfile=zipfile, db_file_name=db_file_name)
+        loader.run(limit=6)
 
         # The database now should contain ten records in the "voters" table
         with sqlite3.connect(db_file_name) as con:
@@ -44,7 +49,7 @@ class TestDBLoader(TestCase):
             actual = len(rows)
             self.assertEqual(expected, actual)
 
-            expected = 10
+            expected = 6
             actual = int(rows[0][0])
             self.assertEqual(expected, actual)
 
