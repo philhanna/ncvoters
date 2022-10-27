@@ -1,4 +1,5 @@
 import logging
+import pkgutil
 import sqlite3
 
 from voters import DB_FILE_NAME, COLUMNS, CSVExtractor, TEXT_FILE_NAME, ZIP_FILE_NAME
@@ -39,6 +40,9 @@ class DBLoader:
             cur = con.cursor()
             for row in extractor.get_rows(limit=limit):
                 cur.execute(insert_stmt, row)
+            con.commit()
+            sql = pkgutil.get_data("voters", "active_voters_view.sql").decode("utf-8")
+            con.execute(sql)
             con.commit()
         logging.info(f"end, count={extractor.count:,}")
 
