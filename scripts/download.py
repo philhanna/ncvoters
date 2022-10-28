@@ -276,7 +276,7 @@ with sqlite3.connect(outfile) as con:
 # Step 3: Load rows into the new database
 ########################################################################
 
-logging.info(f"start")
+logging.info(f"start loading voters into the data")
 
 # Create the SQL for the INSERT statement we'll use.  This can't be
 # hard-coded because it has to have the right number of "?" symbols
@@ -298,7 +298,7 @@ with ZipFile(ZIP_FILE_NAME) as archive:
 
                 # Log a progress message every million records created
                 if count % 1000000 == 0:
-                    logging.info(f"count={count:,}")
+                    logging.info(f"voters so far = {count:,}")
 
                 # Skip the column header row
                 if count == 1:
@@ -322,4 +322,4 @@ with ZipFile(ZIP_FILE_NAME) as archive:
             # At end, commit the transaction
             con.commit()
 
-            logging.info(f"end, count={count:,}")
+            logging.info(f"end, total voters = {count:,}")
