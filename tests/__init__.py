@@ -1,10 +1,12 @@
-import os.path
+from pathlib import Path
 
-my_dir = os.path.dirname(__file__)
-project_root_dir = os.path.abspath(os.path.join(my_dir, ".."))
-testdata = os.path.join(project_root_dir, "testdata")
+my_file = Path(__file__)
+tests_dir = my_file.parent
+project_root = tests_dir.parent
+testdata = project_root.joinpath("testdata")
+outputs = project_root.joinpath("outputs")
 
 __all__ = [
-    'project_root_dir',
+    'outputs',
     'testdata',
 ]
