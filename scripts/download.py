@@ -276,7 +276,7 @@ with sqlite3.connect(outfile) as con:
 # Step 3: Load rows into the new database
 ########################################################################
 
-logging.info(f"start loading voters into the data")
+logging.info(f"start loading voters into the database")
 
 # Create the SQL for the INSERT statement we'll use.  This can't be
 # hard-coded because it has to have the right number of "?" symbols
