@@ -5,6 +5,13 @@ See comments at the beginning of
 [download-voters.py](https://github.com/philhanna/voters/blob/56e1addab56c6f6f0cc9bb1a081cef52642b3613/scripts/download-voters.py)
 for details.
 
+## Table of contents
+
+- [Installation](#installation)
+  - [Clone the repository](#clone-the-repository)
+  - [Create a virtual environment and install the application](#create-a-virtual-environment-and-install-the-application)
+  - [References](#references)
+
 ## Installation
 
 ### Clone the repository
