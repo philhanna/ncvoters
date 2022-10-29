@@ -1,8 +1,8 @@
-import os
+from pathlib import Path
 import sqlite3
 from unittest import TestCase
 
-from tests import testdata
+from tests import testdata, outputs
 from voters import DBLoader, DBCreator, TMP
 
 
@@ -22,25 +22,25 @@ class TestDBLoader(TestCase):
         self.assertEqual(expected, actual)
 
     def test_create_small_db(self):
-        # Make a database file name in /tmp
+        # Make a database file name in outputs
 
         filename = "ten_voters.txt"
-        zipfile = os.path.join(testdata, "ten_voters.zip")
-        db_file_name = os.path.join(TMP, "small.db")
-        if os.path.exists(db_file_name):
-            os.remove(db_file_name)
+        zipfile = testdata.joinpath("ten_voters.zip")
+        dbfile = outputs.joinpath("small.db")
+        if dbfile.exists():
+            dbfile.unlink()
 
         # Create the small database with just the table definitions,
         # not any rows of data
-        creator = DBCreator(filename=db_file_name)
+        creator = DBCreator(filename=dbfile)
         creator.run()
 
         # Now load a few records from the actual network source
-        loader = DBLoader(filename=filename, zipfile=zipfile, db_file_name=db_file_name)
+        loader = DBLoader(filename=filename, zipfile=zipfile, db_file_name=dbfile)
         loader.run(limit=6)
 
         # The database now should contain ten records in the "voters" table
-        with sqlite3.connect(db_file_name) as con:
+        with sqlite3.connect(dbfile) as con:
             c = con.cursor()
             c.execute("select count(*) from voters;")
             rows = c.fetchall()
@@ -54,4 +54,4 @@ class TestDBLoader(TestCase):
             self.assertEqual(expected, actual)
 
         # Delete the database file if the tests were successful
-        os.remove(db_file_name)
+        dbfile.unlink()

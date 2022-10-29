@@ -5,6 +5,8 @@ tests_dir = my_file.parent
 project_root = tests_dir.parent
 testdata = project_root.joinpath("testdata")
 outputs = project_root.joinpath("outputs")
+if not outputs.exists():
+    outputs.mkdir()
 
 __all__ = [
     'outputs',

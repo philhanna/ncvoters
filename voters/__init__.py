@@ -1,4 +1,3 @@
-import os.path
 import tempfile
 
 __all__ = {
@@ -16,11 +15,13 @@ __all__ = {
     'COLUMNS'
 }
 
-TMP = tempfile.gettempdir()
+from pathlib import Path
+
+TMP = Path(tempfile.gettempdir())
 DATA_SOURCE_URL = "https://s3.amazonaws.com/dl.ncsbe.gov/data/ncvoter_Statewide.zip"
 TEXT_FILE_NAME = "ncvoter_Statewide.txt"
-DB_FILE_NAME = os.path.join(TMP, "ncvoters.db")
-ZIP_FILE_NAME = os.path.join(TMP, "ncvoter_Statewide.zip")
+DB_FILE_NAME = TMP.joinpath("ncvoters.db")
+ZIP_FILE_NAME = TMP.joinpath("ncvoter_Statewide.zip")
 ZIP_CHUNK_SIZE = 2 ** 24
 ENCODING = "iso8859"
 COLUMNS = {
