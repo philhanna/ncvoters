@@ -309,7 +309,7 @@ with ZipFile(ZIP_FILE_NAME) as archive:
                     logging.info(f"voters so far = {count:,}")
 
                 # Skip the column header row
-                if count == 1:
+                if count == 0:
                     continue
 
                 # Select only certain columns
