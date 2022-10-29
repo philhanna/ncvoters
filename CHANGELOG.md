@@ -7,14 +7,21 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
-- Added auxiliary tables and views:
+## [1.2.0] - 2022-10-29
+
+### Added
+Added auxiliary tables and views:
   - active voters view
   - counties
   - reason codes
   - status code
-- Removed old development modules. This is a script and notebook only project now.
+- Added start of `origin` notebook, which finds commonest places of origin by last name 
+
+### Changed
 - Renamed `download.py` to `download-voters.py`
-- Added `origin` notebook to find commonest places of origin by last name 
+
+### Deleted
+- Removed old development modules. This is a script and notebook only project now.
 
 ## [1.1.0] - 2022-10-28
 
@@ -42,7 +49,7 @@ Does not require the rest of this project, only the `requests` package.
  
 - Updated README.md
 
-### Fixed
+### Bug fixes
 
 - Issue #12: `create_small_db` unit test fails
 - Issue #11: Unit test fails if no zipfile is already in `/tmp`
@@ -53,7 +60,8 @@ Does not require the rest of this project, only the `requests` package.
 
 First workable version
 
-[Unreleased]: https://github.com/philhanna/voters/compare/1.1.0..HEAD
+[Unreleased]: https://github.com/philhanna/voters/compare/1.2.0..HEAD
+[1.2.0]: https://github.com/philhanna/voters/compare/1.1.0..1.2.0
 [1.1.0]: https://github.com/philhanna/voters/compare/1.0.1..1.1.0
 [1.0.1]: https://github.com/philhanna/voters/compare/1.0.0..1.0.1
 [1.0.0]: https://github.com/philhanna/voters/compare/840698..1.0.0
