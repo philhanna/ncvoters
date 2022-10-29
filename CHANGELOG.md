@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+- Added auxiliary tables and views:
+  - active voters view
+  - counties
+  - reason codes
+  - status code
+- Removed old development modules. This is a script and notebook only project now.
 - Renamed `download.py` to `download-voters.py`
 - Added `origin` notebook to find commonest places of origin by last name 
 
