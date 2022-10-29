@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+- Renamed `download.py` to `download-voters.py`
 - Added `origin` notebook to find commonest places of origin by last name 
 
 ## [1.1.0] - 2022-10-28
