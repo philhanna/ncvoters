@@ -7,6 +7,7 @@ for details.
 
 ### References
 - [Github repository](https://github.com/philhanna/voters)
+- [NC Board of Elections file layoutg](https://s3.amazonaws.com/dl.ncsbe.gov/data/layout_ncvoter.txt)
 - [Python 3 standard library](https://docs.python.org/3/library/index.html)
 - [requests](https://requests.readthedocs.io/en/latest/)
 - [Pandas API](https://pandas.pydata.org/docs/reference/index.html)
