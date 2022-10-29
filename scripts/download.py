@@ -119,7 +119,7 @@ import sys
 import tempfile
 from http import HTTPStatus
 from pathlib import Path
-from zipfile import ZipFile
+from zipfile import ZipFile, BadZipFile
 
 # Where to find the zip file, and the name for the text file inside it
 DATA_SOURCE_URL = "https://s3.amazonaws.com/dl.ncsbe.gov/data/ncvoter_Statewide.zip"
@@ -137,6 +137,37 @@ ENCODING = "iso8859"
 # I start at 16 MB; you can make it larger or smaller depending
 # on how much memory you have vs. how long it will take to run.
 ZIP_CHUNK_SIZE = 2 ** 24
+
+# COLUMNS is a map of column numbers to column names for the subset
+# of columns we want.
+#
+# You can adjust this by adding or deleting lines.  The columns are
+# numbered starting with 0 for county_id to 66 for vtd_desc
+# Be sure to put the column name in quote and add a comma at the
+# end of the line
+COLUMNS = {
+    0: "county_id",
+    2: "voter_reg_num",
+    4: "last_name",
+    5: "first_name",
+    6: "middle_name",
+    7: "name_suffix_lbl",
+    8: "status_cd",
+    10: "reason_cd",
+    12: "res_street_address",
+    13: "res_city_desc",
+    14: "state_cd",
+    15: "zip_code",
+    23: "full_phone_number",
+    26: "race_code",
+    27: "ethnic_code",
+    28: "party_cd",
+    29: "gender_code",
+    30: "birth_year",
+    31: "age_at_year_end",
+    32: "birth_state",
+}
+NCOLS = len(COLUMNS)
 
 # Start logging.  It takes a little over 2 minutes to run this on my computer,
 # so I log progress information on the console.
@@ -156,6 +187,13 @@ ch.flush()
 
 zipfile = ZIP_FILE_NAME
 if zipfile.exists():
+    # Make sure the zipfile isn't a partial one
+    try:
+        with ZipFile(zipfile) as _:
+            pass
+    except BadZipFile as ex:
+        errmsg = f"{zipfile} is not a full zip file"
+        raise RuntimeError(errmsg)
     logging.info(f"Using existing zip file {zipfile}")
 else:
     source = DATA_SOURCE_URL
@@ -192,37 +230,7 @@ if outfile.exists():
     outfile.unlink()
 
 # Build the sql CREATE TABLE statement for the .db file, using the
-# column names in the COLUMNS dictionary below.
-# COLUMNS is a map of column numbers to column names for the subset
-# of columns we want.
-#
-# You can adjust this by adding or deleting lines.  The columns are
-# numbered starting with 0 for county_id to 66 for vtd_desc
-# Be sure to put the column name in quote and add a comma at the
-# end of the line
-COLUMNS = {
-    0: "county_id",
-    2: "voter_reg_num",
-    4: "last_name",
-    5: "first_name",
-    6: "middle_name",
-    7: "name_suffix_lbl",
-    8: "status_cd",
-    10: "reason_cd",
-    12: "res_street_address",
-    13: "res_city_desc",
-    14: "state_cd",
-    15: "zip_code",
-    23: "full_phone_number",
-    26: "race_code",
-    27: "ethnic_code",
-    28: "party_cd",
-    29: "gender_code",
-    30: "birth_year",
-    31: "age_at_year_end",
-    32: "birth_state",
-}
-ncols = len(COLUMNS)
+# column names in the COLUMNS dictionary.
 
 # For the list of columns in COLUMNS, we'll build an SQL statement
 # that looks like this:
