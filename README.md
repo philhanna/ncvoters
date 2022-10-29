@@ -3,13 +3,14 @@ This project allows the user to download selected rows and columns from
 North Carolina voter registration data at https://www.ncsbe.gov/results-data/voter-registration-data
 See comments at the beginning of
 [scripts/download-voters.py](https://github.com/philhanna/voters/blob/56e1addab56c6f6f0cc9bb1a081cef52642b3613/scripts/download-voters.py)
-for details.  `scripts/download-voters.py` will perform the actual download.
+for details.
 
 ## Table of contents
 
 - [Installation](#installation)
   - [Clone the repository](#clone-the-repository)
   - [Create a virtual environment and install the application](#create-a-virtual-environment-and-install-the-application)
+  - [Run the download](#run-the-download)
   - [References](#references)
 
 ## Installation
@@ -54,6 +55,13 @@ The `pip install -r requirements.txt` step installs the `requests` package.
 
 The `pip install .` command (**Note the dot!**) actually installs
 the application in your Python system.
+
+## Run the download
+
+```bash
+cd $HOME/ncvoters
+python scripts/download-voters.py
+```
 
 ## References
 - [Github repository](https://github.com/philhanna/voters)
