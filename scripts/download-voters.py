@@ -270,7 +270,7 @@ for i in range(len(COLUMNS)):
     padded_name = name.ljust(max_name_width, ' ')
 
     # Add a comma to all lines but the last
-    comma = "," if i < len(COLUMNS)-1 else ""
+    comma = "," if i < len(COLUMNS) - 1 else ""
     buffer = f"    {padded_name}  TEXT{comma}" + "\n"
 
     sql += buffer
@@ -289,7 +289,7 @@ logging.info(f"start loading voters into the database")
 # Create the SQL for the INSERT statement we'll use.  This can't be
 # hard-coded because it has to have the right number of "?" symbols
 # for the number of columns we're using.
-qmarks = "?, " * (len(COLUMNS)-1) + "?"
+qmarks = "?, " * (len(COLUMNS) - 1) + "?"
 insert_stmt = f"INSERT INTO voters VALUES({qmarks})"
 
 # Create rows filtered by the list of columns.  The first row,
@@ -331,3 +331,188 @@ with ZipFile(ZIP_FILE_NAME) as archive:
             con.commit()
 
             logging.info(f"end, total voters = {count:,}")
+
+########################################################################
+# Step 4: Create additional tables and vites
+########################################################################
+
+logging.info(f"Creating active voters view")
+sql = """
+CREATE VIEW active_voters as
+SELECT		*
+FROM		voters
+WHERE		status_cd = "A"
+"""
+with sqlite3.connect(DB_FILE_NAME) as con:
+    con.execute(sql)
+
+logging.info(f"Creating counties table")
+sql = """
+PRAGMA foreign_keys=OFF;
+BEGIN TRANSACTION;
+CREATE TABLE counties(county_id TEXT,county_desc TEXT);
+INSERT INTO counties VALUES('1','ALAMANCE');
+INSERT INTO counties VALUES('2','ALEXANDER');
+INSERT INTO counties VALUES('3','ALLEGHANY');
+INSERT INTO counties VALUES('4','ANSON');
+INSERT INTO counties VALUES('5','ASHE');
+INSERT INTO counties VALUES('6','AVERY');
+INSERT INTO counties VALUES('7','BEAUFORT');
+INSERT INTO counties VALUES('8','BERTIE');
+INSERT INTO counties VALUES('9','BLADEN');
+INSERT INTO counties VALUES('10','BRUNSWICK');
+INSERT INTO counties VALUES('11','BUNCOMBE');
+INSERT INTO counties VALUES('12','BURKE');
+INSERT INTO counties VALUES('13','CABARRUS');
+INSERT INTO counties VALUES('14','CALDWELL');
+INSERT INTO counties VALUES('15','CAMDEN');
+INSERT INTO counties VALUES('16','CARTERET');
+INSERT INTO counties VALUES('17','CASWELL');
+INSERT INTO counties VALUES('18','CATAWBA');
+INSERT INTO counties VALUES('19','CHATHAM');
+INSERT INTO counties VALUES('20','CHEROKEE');
+INSERT INTO counties VALUES('21','CHOWAN');
+INSERT INTO counties VALUES('22','CLAY');
+INSERT INTO counties VALUES('23','CLEVELAND');
+INSERT INTO counties VALUES('24','COLUMBUS');
+INSERT INTO counties VALUES('25','CRAVEN');
+INSERT INTO counties VALUES('26','CUMBERLAND');
+INSERT INTO counties VALUES('27','CURRITUCK');
+INSERT INTO counties VALUES('28','DARE');
+INSERT INTO counties VALUES('29','DAVIDSON');
+INSERT INTO counties VALUES('30','DAVIE');
+INSERT INTO counties VALUES('31','DUPLIN');
+INSERT INTO counties VALUES('32','DURHAM');
+INSERT INTO counties VALUES('33','EDGECOMBE');
+INSERT INTO counties VALUES('34','FORSYTH');
+INSERT INTO counties VALUES('35','FRANKLIN');
+INSERT INTO counties VALUES('36','GASTON');
+INSERT INTO counties VALUES('37','GATES');
+INSERT INTO counties VALUES('38','GRAHAM');
+INSERT INTO counties VALUES('39','GRANVILLE');
+INSERT INTO counties VALUES('40','GREENE');
+INSERT INTO counties VALUES('41','GUILFORD');
+INSERT INTO counties VALUES('42','HALIFAX');
+INSERT INTO counties VALUES('43','HARNETT');
+INSERT INTO counties VALUES('44','HAYWOOD');
+INSERT INTO counties VALUES('45','HENDERSON');
+INSERT INTO counties VALUES('46','HERTFORD');
+INSERT INTO counties VALUES('47','HOKE');
+INSERT INTO counties VALUES('48','HYDE');
+INSERT INTO counties VALUES('49','IREDELL');
+INSERT INTO counties VALUES('50','JACKSON');
+INSERT INTO counties VALUES('51','JOHNSTON');
+INSERT INTO counties VALUES('52','JONES');
+INSERT INTO counties VALUES('53','LEE');
+INSERT INTO counties VALUES('54','LENOIR');
+INSERT INTO counties VALUES('55','LINCOLN');
+INSERT INTO counties VALUES('56','MACON');
+INSERT INTO counties VALUES('57','MADISON');
+INSERT INTO counties VALUES('58','MARTIN');
+INSERT INTO counties VALUES('59','MCDOWELL');
+INSERT INTO counties VALUES('60','MECKLENBURG');
+INSERT INTO counties VALUES('61','MITCHELL');
+INSERT INTO counties VALUES('62','MONTGOMERY');
+INSERT INTO counties VALUES('63','MOORE');
+INSERT INTO counties VALUES('64','NASH');
+INSERT INTO counties VALUES('65','NEW HANOVER');
+INSERT INTO counties VALUES('66','NORTHAMPTON');
+INSERT INTO counties VALUES('67','ONSLOW');
+INSERT INTO counties VALUES('68','ORANGE');
+INSERT INTO counties VALUES('69','PAMLICO');
+INSERT INTO counties VALUES('70','PASQUOTANK');
+INSERT INTO counties VALUES('71','PENDER');
+INSERT INTO counties VALUES('72','PERQUIMANS');
+INSERT INTO counties VALUES('73','PERSON');
+INSERT INTO counties VALUES('74','PITT');
+INSERT INTO counties VALUES('75','POLK');
+INSERT INTO counties VALUES('76','RANDOLPH');
+INSERT INTO counties VALUES('77','RICHMOND');
+INSERT INTO counties VALUES('78','ROBESON');
+INSERT INTO counties VALUES('79','ROCKINGHAM');
+INSERT INTO counties VALUES('80','ROWAN');
+INSERT INTO counties VALUES('81','RUTHERFORD');
+INSERT INTO counties VALUES('82','SAMPSON');
+INSERT INTO counties VALUES('83','SCOTLAND');
+INSERT INTO counties VALUES('84','STANLY');
+INSERT INTO counties VALUES('85','STOKES');
+INSERT INTO counties VALUES('86','SURRY');
+INSERT INTO counties VALUES('87','SWAIN');
+INSERT INTO counties VALUES('88','TRANSYLVANIA');
+INSERT INTO counties VALUES('89','TYRRELL');
+INSERT INTO counties VALUES('90','UNION');
+INSERT INTO counties VALUES('91','VANCE');
+INSERT INTO counties VALUES('92','WAKE');
+INSERT INTO counties VALUES('93','WARREN');
+INSERT INTO counties VALUES('94','WASHINGTON');
+INSERT INTO counties VALUES('95','WATAUGA');
+INSERT INTO counties VALUES('96','WAYNE');
+INSERT INTO counties VALUES('97','WILKES');
+INSERT INTO counties VALUES('98','WILSON');
+INSERT INTO counties VALUES('99','YADKIN');
+INSERT INTO counties VALUES('100','YANCEY');
+COMMIT;
+"""
+with sqlite3.connect(DB_FILE_NAME) as con:
+    con.execute(sql)
+
+
+logging.info(f"Creating voter status reasons table")
+sql = """
+PRAGMA foreign_keys=OFF;
+BEGIN TRANSACTION;
+CREATE TABLE reasons(
+  reason_cd TEXT,
+  voter_status_reason_desc TEXT
+);
+INSERT INTO reasons VALUES('A1','UNVERIFIED');
+INSERT INTO reasons VALUES('A2','CONFIRMATION PENDING');
+INSERT INTO reasons VALUES('AA','ARMED FORCES');
+INSERT INTO reasons VALUES('AL','LEGACY DATA');
+INSERT INTO reasons VALUES('AN','UNVERIFIED NEW');
+INSERT INTO reasons VALUES('AP','VERIFICATION PENDING');
+INSERT INTO reasons VALUES('AV','VERIFIED');
+INSERT INTO reasons VALUES('DI','UNAVAILABLE ESSENTIAL INFORMATION');
+INSERT INTO reasons VALUES('DN','CONFIRMATION NOT RETURNED');
+INSERT INTO reasons VALUES('DU','VERIFICATION RETURNED UNDELIVERABLE');
+INSERT INTO reasons VALUES('IA','ADMINISTRATIVE');
+INSERT INTO reasons VALUES('IL','LEGACY - CONVERSION');
+INSERT INTO reasons VALUES('IN','CONFIRMATION NOT RETURNED');
+INSERT INTO reasons VALUES('IU','CONFIRMATION RETURNED UNDELIVERABLE');
+INSERT INTO reasons VALUES('R2','DUPLICATE');
+INSERT INTO reasons VALUES('RA','ADMINISTRATIVE');
+INSERT INTO reasons VALUES('RC','REMOVED DUE TO SUSTAINED CHALLENGE');
+INSERT INTO reasons VALUES('RD','DECEASED');
+INSERT INTO reasons VALUES('RF','FELONY CONVICTION');
+INSERT INTO reasons VALUES('RH','MOVED WITHIN STATE');
+INSERT INTO reasons VALUES('RL','MOVED FROM COUNTY');
+INSERT INTO reasons VALUES('RM','REMOVED AFTER 2 FED GENERAL ELECTIONS IN INACTIVE STATUS');
+INSERT INTO reasons VALUES('RP','REMOVED UNDER OLD PURGE LAW');
+INSERT INTO reasons VALUES('RQ','REQUEST FROM VOTER');
+INSERT INTO reasons VALUES('RR','FELONY SENTENCE COMPLETED');
+INSERT INTO reasons VALUES('RS','MOVED FROM STATE');
+INSERT INTO reasons VALUES('RT','TEMPORARY REGISTRANT');
+INSERT INTO reasons VALUES('SM','MILITARY');
+INSERT INTO reasons VALUES('SO','OVERSEAS CITIZEN');
+COMMIT;
+"""
+with sqlite3.connect(DB_FILE_NAME) as con:
+    con.execute(sql)
+
+logging.info(f"Creating voter status codes table")
+sql = """
+PRAGMA foreign_keys=OFF;
+BEGIN TRANSACTION;
+CREATE TABLE status_codes(
+  status_cd TEXT,
+  voter_status_desc TEXT
+);
+INSERT INTO status_codes VALUES('A','ACTIVE');
+INSERT INTO status_codes VALUES('D','DENIED');
+INSERT INTO status_codes VALUES('I','INACTIVE');
+INSERT INTO status_codes VALUES('R','REMOVED');
+INSERT INTO status_codes VALUES('S','TEMPORARY');
+COMMIT;
+"""
+with sqlite3.connect(DB_FILE_NAME) as con:
+    con.execute(sql)
