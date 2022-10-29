@@ -454,7 +454,7 @@ INSERT INTO counties VALUES('100','YANCEY');
 COMMIT;
 """
 with sqlite3.connect(DB_FILE_NAME) as con:
-    con.execute(sql)
+    con.executescript(sql)
 
 
 logging.info(f"Creating voter status reasons table")
@@ -497,7 +497,7 @@ INSERT INTO reasons VALUES('SO','OVERSEAS CITIZEN');
 COMMIT;
 """
 with sqlite3.connect(DB_FILE_NAME) as con:
-    con.execute(sql)
+    con.executescript(sql)
 
 logging.info(f"Creating voter status codes table")
 sql = """
@@ -515,4 +515,4 @@ INSERT INTO status_codes VALUES('S','TEMPORARY');
 COMMIT;
 """
 with sqlite3.connect(DB_FILE_NAME) as con:
-    con.execute(sql)
+    con.executescript(sql)
