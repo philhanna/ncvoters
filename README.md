@@ -1,4 +1,4 @@
-# NCVoters
+# ncvoters
 This project allows the user to download selected rows and columns from
 North Carolina voter registration data at https://www.ncsbe.gov/results-data/voter-registration-data
 See comments at the beginning of
