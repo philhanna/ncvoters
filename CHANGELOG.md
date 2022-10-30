@@ -12,6 +12,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - Added `setup.py` and `requirements.txt`
 
+### Changed
+- Finished `origin` notebook
+
 ### Bug fixes
 - Fixed problem with creating auxiliary tables
 
