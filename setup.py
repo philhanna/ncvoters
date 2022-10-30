@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='ncvoters',
-    version='1.2.0',
+    version='1.2.1',
     packages=[''],
     url='https://github.com/philhanna/ncvoters',
     license='MIT license',
