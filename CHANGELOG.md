@@ -7,7 +7,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
-Added `setup.py` and `requirements.txt`
+## [1.2.1] - 2022-10-29
+
+### Added
+- Added `setup.py` and `requirements.txt`
+
+### Bug fixes
+- Fixed problem with creating auxiliary tables
 
 ## [1.2.0] - 2022-10-29
 
@@ -62,7 +68,8 @@ Does not require the rest of this project, only the `requests` package.
 
 First workable version
 
-[Unreleased]: https://github.com/philhanna/voters/compare/1.2.0..HEAD
+[Unreleased]: https://github.com/philhanna/voters/compare/1.2.1..HEAD
+[1.2.1]: https://github.com/philhanna/voters/compare/1.2.0..1.2.1
 [1.2.0]: https://github.com/philhanna/voters/compare/1.1.0..1.2.0
 [1.1.0]: https://github.com/philhanna/voters/compare/1.0.1..1.1.0
 [1.0.1]: https://github.com/philhanna/voters/compare/1.0.0..1.0.1
