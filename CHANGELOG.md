@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+### Added 
+- Pandas version of top10 notebook
+
 ## [1.2.1] - 2022-10-29
 
 ### Added
