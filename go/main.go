@@ -74,6 +74,6 @@ func main() {
 	if err != nil {
 		log.Fatalf("Step 2 failed: %v", err)
 	}
-	log.Println("Created empty database")
+	log.Println("Created empty database", dbFileName)
 
 }
