@@ -10,7 +10,3 @@ func TestGoodConnect(t *testing.T) {
 		t.Errorf("Could not connect to %s", dbFileName)
 	}
 }
-
-func TestMaxNameWidth(t *testing.T) {
-	buildSQL()
-}

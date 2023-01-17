@@ -4,6 +4,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"sort"
 )
 
 const (
@@ -52,6 +53,7 @@ var columns = map[int]string{
 	31: "age_at_year_end",
 	32: "birth_state",
 }
+var columnNumbers = getColumnNumbers()
 
 func main() {
 
@@ -62,5 +64,13 @@ func main() {
 		log.Fatalf("Step 1 failed: %v", err)
 	}
 	log.Printf("zip file size is %d bytes", filesize)
+}
 
+func getColumnNumbers() []int {
+	var columnNumbers = make([]int, 0, len(columns))
+	for k := range columns {
+		columnNumbers = append(columnNumbers, k)
+	}
+	sort.Ints(columnNumbers)
+	return columnNumbers
 }
