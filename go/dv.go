@@ -1,4 +1,4 @@
-// See dv.md for documentation
+// See ncvoters.md for documentation
 package main
 
 import (
