@@ -3,6 +3,7 @@ package main
 
 import (
 	"archive/zip"
+	"fmt"
 	"io"
 	"log"
 	"net/http"
@@ -29,7 +30,9 @@ var (
 	// of columns we want.
 	//
 	// You can adjust this by adding or deleting lines. The columns are
-	// numbered starting with 0 for county_id to 66 for vtd_desc
+	// numbered starting with 0 for county_id to 66 for vtd_desc.
+	//
+	// The map is initialized with the setColumns method called from main.
 	columns = make(map[int]string)
 )
 
@@ -39,75 +42,103 @@ func main() {
 	setColumns()
 
 	// 1. Download the latest zip file
-	err := step1()
+	filesize, err := step1()
 	if err != nil {
 		log.Fatalf("Step 1 failed: %v", err)
 	}
+	log.Printf("zip file size is %d bytes", filesize)
 
 }
 
 /* Mainline subroutines */
 
-func step1() error {
+func step1() (int64, error) {
 
 	/*******************************************************************
 	 * Step 1: Download the latest zip file from the NC state elections
 	 * website. Skip the download if the file already exists locally.
 	 *******************************************************************/
 
+	var nBytes int64
+
+	// If zip file already exists in /tmp, skip the download,
+	// just return the size
+
 	zipFileName := filepath.Join(os.TempDir(), "ncvoter_Statewide.zip")
 	if fileExists(zipFileName) {
+
 		// Make sure the zipfile isn't a partial one.
 		_, err := assertZipfileIsntPartial(zipFileName)
 		if err != nil {
-			log.Printf("Could not open zip file %v: %s", zipFileName, err)
-			return err
+			errmsg := fmt.Errorf("Could not open zip file %v: %s", zipFileName, err)
+			return 0, errmsg
 		}
-		log.Printf("Using existing zip file %s\n", zipFileName)
+
+		// Tell the user that we are using an existing file
+		log.Printf("Using existing zip file %s", zipFileName)
+
+		// Get the file size
+		file, err := os.Open(zipFileName)
+		if err != nil {
+			log.Fatal(err)
+		}
+		fi, err := file.Stat()
+		if err != nil {
+			log.Fatal(err)
+		}
+		nBytes = fi.Size()
+		return nBytes, nil
 	}
+
+	// Otherwize, download the file
 	source := dataSourceUrl
-	log.Printf("start, source=%s\n", source)
+	log.Printf("start, source=%s", source)
 
 	// Make an HTTP request for the source zip file
 	resp, err := http.Get(source)
+	defer resp.Body.Close()
 	if err != nil {
-		// handle error
 		log.Fatalf("err=%s\n", err)
 	}
-	defer resp.Body.Close()
 
+	// Create the output zip file
 	fp, err := os.Create(zipFileName)
 	defer fp.Close()
 	if err != nil {
 		log.Fatalf("Could not open %s for output, err=%v\n", zipFileName, err)
 	}
 
+	// Read from the HTTP stream and write to the output zip file
 	chunk := make([]byte, zipChunkSize)
-	soFar := 0
-
+	var soFar int64
 	for i := 0; true; i += 1 {
 
+		// Read zipChunkSize bytes from the HTTP stream.
+		// If number of bytes is zero, we are done
+		log.Printf("Reading chunk %d, %d bytes so far", i, soFar)
 		n, err := io.ReadAtLeast(resp.Body, chunk, zipChunkSize)
+		soFar += int64(n)
 		if n == 0 {
 			break
 		}
-		soFar += n
 
-		log.Printf("Reading chunk %d, %'d bytes so far\n", i, soFar)
-		_, err = fp.Write(chunk)
+		// Then write the chunk slice to the output zip file
+		_, err = fp.Write(chunk[0:n])
 		if err != nil {
-			log.Printf("err=%v\n", err)
+			log.Printf("err=%v", err)
 			break
 		}
 	}
 
 	// Done
 
-	return nil
+	return soFar, nil
 }
 
 /* Internal functions */
 
+// assertZipfileIsntPartial checks whether the specified zip file
+// can be opened correctly.
 func assertZipfileIsntPartial(filename string) (*zip.ReadCloser, error) {
 	archive, err := zip.OpenReader(filename)
 	if err != nil {
@@ -118,6 +149,7 @@ func assertZipfileIsntPartial(filename string) (*zip.ReadCloser, error) {
 
 }
 
+// fileExists returns true if the specified file exist
 func fileExists(filename string) bool {
 	info, err := os.Stat(filename)
 	if os.IsNotExist(err) {
@@ -126,6 +158,7 @@ func fileExists(filename string) bool {
 	return !info.IsDir()
 }
 
+// setColumns initializes the list of columns
 func setColumns() {
 	columns[4] = "last_name"
 	columns[5] = "first_name"
