@@ -2,8 +2,8 @@ package main
 
 import (
 	"archive/zip"
-	"fmt"
 	"os"
+	"sort"
 )
 
 // assertZipfileIsntPartial checks whether the specified zip file
@@ -16,21 +16,6 @@ func assertZipfileIsntPartial(filename string) (*zip.ReadCloser, error) {
 	defer archive.Close()
 	return nil, nil
 
-}
-
-// buildSQL constructs the SQL needed to create the voters table
-func buildSQL() (string, error) {
-	var names []string
-	for i := 0; i < len(columnNumbers); i++ {
-		columnNumber := columnNumbers[i]
-		names = append(names, columns[columnNumber])
-	}
-	fmt.Printf("DEBUG: names=%v\n", names)
-
-	maxNameLength := getMaxNameLength(names)
-	fmt.Printf("DEBUG: maxNameLength=%d\n", maxNameLength)
-	sql := "CREATE TABLE voters(\n"
-	return sql, nil
 }
 
 // deleteFile deletes the specified file, if it exists
@@ -49,6 +34,27 @@ func fileExists(filename string) bool {
 		return false
 	}
 	return !info.IsDir()
+}
+
+// getColumnNames returns the column names in column number order
+func getColumnNames() []string {
+	var names []string
+	for i := 0; i < len(columnNumbers); i++ {
+		columnNumber := columnNumbers[i]
+		name := columns[columnNumber]
+		names = append(names, name)
+	}
+	return names
+}
+
+// getColumnNumbers returns the column numbers in sorted order
+func getColumnNumbers() []int {
+	var columnNumbers = make([]int, 0, len(columns))
+	for k := range columns {
+		columnNumbers = append(columnNumbers, k)
+	}
+	sort.Ints(columnNumbers)
+	return columnNumbers
 }
 
 // getMaxNameLength returns the length of the longest name in the list

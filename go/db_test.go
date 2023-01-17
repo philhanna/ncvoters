@@ -1,6 +1,17 @@
 package main
 
-import "testing"
+import (
+	"fmt"
+	"testing"
+)
+
+func TestBuildSQL(t *testing.T) {
+	sql, err := buildSQL()
+	if err != nil {
+		t.Errorf("Could not create SQL, err=%s", err)
+	}
+	fmt.Println(sql)
+}
 
 func TestGoodConnect(t *testing.T) {
 	dbFileName := "testdata/stooges.db"
@@ -9,8 +20,4 @@ func TestGoodConnect(t *testing.T) {
 	if err != nil {
 		t.Errorf("Could not connect to %s", dbFileName)
 	}
-}
-
-func TestMaxNameWidth(t *testing.T) {
-	buildSQL()
 }
