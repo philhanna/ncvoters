@@ -22,18 +22,17 @@ const (
 	zipChunkSize = 16 * 1024 * 1024
 )
 
-func main() {
-
+var (
 	// columns is a map of column numbers to column names for the subset
 	// of columns we want.
 	//
 	// You can adjust this by adding or deleting lines. The columns are
 	// numbered starting with 0 for county_id to 66 for vtd_desc
-	columns := make(map[int]string)
+	columns = make(map[int]string)
+)
 
-	columns[4] = "last_name"
-	columns[5] = "first_name"
-	columns[6] = "middle_name"
+func main() {
+	setColumns()
 
 	// dbFileName := filepath.Join(os.TempDir(), "ncvoters.db")
 
@@ -70,4 +69,10 @@ func fileExists(filename string) bool {
 		return false
 	}
 	return !info.IsDir()
+}
+
+func setColumns() {
+	columns[4] = "last_name"
+	columns[5] = "first_name"
+	columns[6] = "middle_name"
 }
