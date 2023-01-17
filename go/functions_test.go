@@ -17,6 +17,15 @@ func TestExistingFile(t *testing.T) {
 	}
 }
 
+func TestMaxNameLength(t *testing.T) {
+	names := []string{"Larry", "Curly", "Moe"}
+	expected := 5
+	actual := getMaxNameLength(names)
+	if actual != expected {
+		t.Errorf("Expected longest name length=%d, got %d", expected, actual)
+	}
+}
+
 func TestNonExistingFile(t *testing.T) {
 	filename := "bogus"
 	if fileExists(filename) {
