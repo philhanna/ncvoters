@@ -2,6 +2,8 @@ package main
 
 import (
 	"log"
+	"os"
+	"path/filepath"
 )
 
 const (
@@ -17,6 +19,9 @@ const (
 	// on how much memory you have vs. how long it will take to run.
 	zipChunkSize = 16 * 1024 * 1024
 )
+
+// Path to the database to be created
+var dbFileName = filepath.Join(os.TempDir(), "ncvoters.db")
 
 // columns is a map of column numbers to column names for the subset
 // of columns we want.

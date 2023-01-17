@@ -1,9 +1,18 @@
-# Download Voters
-Go program to download selected rows and column from the
+# Download voters
+A Go program to download selected rows and column from the
 voter registration data at the NC Board of Elections website
 and create an SQLite database file from it.  The data is
 updated every Saturday.
 
+## Table of contents
+- [File format](#file-format)
+- [Program logic](#program-logic)
+  - [Initialization:](#initialization) Declare variables and constants.
+  - [Step 1:](#step-1) Download the zip file from the website.
+  - [Step 2:](#step-2) Create an empty voter database and create the table(s).
+
+
+## File format
 The file at the website is a very large (about 478MB) zip file,
 and the CSV file it contains is nearly 4GB, which can make it
 hard to manage.  Not all the columns may be of interest, so this
@@ -59,10 +68,7 @@ name                       data type          description
 21: mail_state              varchar(2)         Mailing address city code
 22: mail_zipcode            char(9)            Mailing address zip code
 23: full_phone_number       varchar(12)        Full phone number including area code
-24: confidential_ind        char(1)            Confidential indicator (by General Statute
-
-	certain data is confidential for this record)
-
+24: confidential_ind        char(1)            Confidential indicator (by General Statute certain data is confidential for this record)
 25: registr_dt              char(10)           Registration date
 26: race_code               char(3)            Race code
 27: ethnic_code             char(3)            Ethnicity code
@@ -108,5 +114,46 @@ name                       data type          description
 ------------------------------------------------------------------------------------
 ```
 
-See the columns map below for a list of what I selected as the
+See the columns map in `main.go` for a list of what I selected as the
 columns of interest. You can change this by adding or deleting lines.
+
+## Program logic
+
+### Initialization
+
+Initialize variables and constants. This includes:
+- Where to find the zip file, and the name for the text file inside it
+- Where to put the output zip file and database
+- The required file encoding
+- How big a chunk to read from the input stream
+- A map of column numbers to names for the columns of interest
+
+### Step 1
+
+Download the latest zip file from the NC state board of
+elections website.
+
+#### If the file already exists locally:
+
+- Check whether it is a valid `.zip` file.
+If not, this typically means that only part of the file had been downloaded.
+- If the file is good:
+  - Tell the user we are using an existing file.
+  - Get the file size.
+  - Skip the download.
+
+#### Otherwise, perform the download:
+
+- Make an HTTP request for the zip file.
+- Open the output zip file in `/tmp`.
+- Read from the HTTP stream and write to the output zip file:
+  - Read a chunk of bytes from the HTTP stream. If the number of bytes is zero, we are done.
+  - Write the chunk to the output zip file.
+- Return the total number of bytes read.
+
+### Step 2
+
+- Delete the database if it already exists.
+- Build the SQL CREATE TABLE statement for the .db file,
+using the columns specified in the map.
+- Run the SQL to create the `voters` table.
