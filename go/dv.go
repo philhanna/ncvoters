@@ -3,7 +3,9 @@ package main
 
 import (
 	"archive/zip"
+	"io"
 	"log"
+	"net/http"
 	"os"
 	"path/filepath"
 )
@@ -32,9 +34,21 @@ var (
 )
 
 func main() {
+
+	// Populate the column number map
 	setColumns()
 
-	// dbFileName := filepath.Join(os.TempDir(), "ncvoters.db")
+	// 1. Download the latest zip file
+	err := step1()
+	if err != nil {
+		log.Fatalf("Step 1 failed: %v", err)
+	}
+
+}
+
+/* Mainline subroutines */
+
+func step1() error {
 
 	/*******************************************************************
 	 * Step 1: Download the latest zip file from the NC state elections
@@ -46,12 +60,53 @@ func main() {
 		// Make sure the zipfile isn't a partial one.
 		_, err := assertZipfileIsntPartial(zipFileName)
 		if err != nil {
-			log.Fatalf("Could not open zip file %v: %s", zipFileName, err)
+			log.Printf("Could not open zip file %v: %s", zipFileName, err)
+			return err
 		}
 		log.Printf("Using existing zip file %s\n", zipFileName)
 	}
+	source := dataSourceUrl
+	log.Printf("start, source=%s\n", source)
 
+	// Make an HTTP request for the source zip file
+	resp, err := http.Get(source)
+	if err != nil {
+		// handle error
+		log.Fatalf("err=%s\n", err)
+	}
+	defer resp.Body.Close()
+
+	fp, err := os.Create(zipFileName)
+	defer fp.Close()
+	if err != nil {
+		log.Fatalf("Could not open %s for output, err=%v\n", zipFileName, err)
+	}
+
+	chunk := make([]byte, zipChunkSize)
+	soFar := 0
+
+	for i := 0; true; i += 1 {
+
+		n, err := io.ReadAtLeast(resp.Body, chunk, zipChunkSize)
+		if n == 0 {
+			break
+		}
+		soFar += n
+
+		log.Printf("Reading chunk %d, %'d bytes so far\n", i, soFar)
+		_, err = fp.Write(chunk)
+		if err != nil {
+			log.Printf("err=%v\n", err)
+			break
+		}
+	}
+
+	// Done
+
+	return nil
 }
+
+/* Internal functions */
 
 func assertZipfileIsntPartial(filename string) (*zip.ReadCloser, error) {
 	archive, err := zip.OpenReader(filename)
