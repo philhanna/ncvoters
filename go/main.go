@@ -52,8 +52,13 @@ var columns = map[int]string{
 	31: "age_at_year_end",
 	32: "birth_state",
 }
-var columnNumbers = getColumnNumbers()
-var columnNames = getColumnNames()
+
+type Column struct {
+	number int    // column number
+	name   string // column name
+}
+
+var columnsAsStruct = getColumnsAsStruct()
 
 func main() {
 
@@ -71,4 +76,18 @@ func main() {
 	}
 	log.Println("Created empty database")
 
+}
+
+// getColumnsAsStruct returns a list of Column structs in column number order
+func getColumnsAsStruct() []Column {
+	var cnStructs = make([]Column, 0, len(columns))
+	cns := getColumnNumbers()
+	cnn := getColumnNames()
+	for i := 0; i < len(columns); i++ {
+		var cnStruct Column
+		cnStruct.number = cns[i]
+		cnStruct.name = cnn[i]
+		cnStructs = append(cnStructs, cnStruct)
+	}
+	return cnStructs
 }

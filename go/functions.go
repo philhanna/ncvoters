@@ -39,7 +39,8 @@ func fileExists(filename string) bool {
 // getColumnNames returns the column names in column number order
 func getColumnNames() []string {
 	var names []string
-	for i := 0; i < len(columnNumbers); i++ {
+	columnNumbers := getColumnNumbers()
+	for i := 0; i < len(columns); i++ {
 		columnNumber := columnNumbers[i]
 		name := columns[columnNumber]
 		names = append(names, name)
