@@ -58,6 +58,20 @@ func getColumnNumbers() []int {
 	return columnNumbers
 }
 
+// getColumnsAsStruct returns a list of Column structs in column number order
+func getColumnsAsStruct() []Column {
+	var cnStructs = make([]Column, 0, len(columns))
+	cns := getColumnNumbers()
+	cnn := getColumnNames()
+	for i := 0; i < len(columns); i++ {
+		var cnStruct Column
+		cnStruct.number = cns[i]
+		cnStruct.name = cnn[i]
+		cnStructs = append(cnStructs, cnStruct)
+	}
+	return cnStructs
+}
+
 // getMaxNameLength returns the length of the longest name in the list
 func getMaxNameLength(names []string) int {
 	maxLength := 0
