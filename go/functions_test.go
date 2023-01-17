@@ -4,15 +4,6 @@ import (
 	"testing"
 )
 
-func TestColumns(t *testing.T) {
-	setColumns()
-	actual := len(columns)
-	expected := 3
-	if actual != expected {
-		t.Errorf("Number of columns was %d, not %d", actual, expected)
-	}
-}
-
 func TestConstants(t *testing.T) {
 	if encoding != "iso8859" {
 		t.Errorf("Should have found constant 'encoding'")

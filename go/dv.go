@@ -25,23 +25,38 @@ const (
 	zipChunkSize = 16 * 1024 * 1024
 )
 
-var (
-	// columns is a map of column numbers to column names for the subset
-	// of columns we want.
-	//
-	// You can adjust this by adding or deleting lines. The columns are
-	// numbered starting with 0 for county_id to 66 for vtd_desc.
-	//
-	// The map is initialized with the setColumns method called from main.
-	columns = make(map[int]string)
-)
+// columns is a map of column numbers to column names for the subset
+// of columns we want.
+//
+// You can adjust this by adding or deleting lines. The columns are
+// numbered starting with 0 for county_id to 66 for vtd_desc.
+var columns = map[int]string{
+	0:  "county_id",
+	2:  "voter_reg_num",
+	4:  "last_name",
+	5:  "first_name",
+	6:  "middle_name",
+	7:  "name_suffix_lbl",
+	8:  "status_cd",
+	10: "reason_cd",
+	12: "res_street_address",
+	13: "res_city_desc",
+	14: "state_cd",
+	15: "zip_code",
+	23: "full_phone_number",
+	26: "race_code",
+	27: "ethnic_code",
+	28: "party_cd",
+	29: "gender_code",
+	30: "birth_year",
+	31: "age_at_year_end",
+	32: "birth_state",
+}
 
 func main() {
 
-	// Populate the column number map
-	setColumns()
-
 	// 1. Download the latest zip file
+
 	filesize, err := step1()
 	if err != nil {
 		log.Fatalf("Step 1 failed: %v", err)
@@ -96,17 +111,17 @@ func step1() (int64, error) {
 
 	// Make an HTTP request for the source zip file
 	resp, err := http.Get(source)
-	defer resp.Body.Close()
 	if err != nil {
 		log.Fatalf("err=%s\n", err)
 	}
+	defer resp.Body.Close()
 
 	// Create the output zip file
 	fp, err := os.Create(zipFileName)
-	defer fp.Close()
 	if err != nil {
 		log.Fatalf("Could not open %s for output, err=%v\n", zipFileName, err)
 	}
+	defer fp.Close()
 
 	// Read from the HTTP stream and write to the output zip file
 	chunk := make([]byte, zipChunkSize)
@@ -156,11 +171,4 @@ func fileExists(filename string) bool {
 		return false
 	}
 	return !info.IsDir()
-}
-
-// setColumns initializes the list of columns
-func setColumns() {
-	columns[4] = "last_name"
-	columns[5] = "first_name"
-	columns[6] = "middle_name"
 }
