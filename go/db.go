@@ -20,7 +20,7 @@ func buildSQL() (string, error) {
 		// Add a comma to all lines but the last
 		var comma string
 		comma = ","
-		if i >= len(columns)-1 {
+		if i >= len(selectedColumns)-1 {
 			comma = ""
 		}
 

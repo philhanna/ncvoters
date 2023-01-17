@@ -23,14 +23,14 @@ const (
 // Path to the database to be created
 var dbFileName = filepath.Join(os.TempDir(), "ncvoters.db")
 
-// columns is a map of column numbers to column names for the subset
-// of columns we want.
+// selectedColumns is a map of column numbers to column names for the subset
+// of selectedColumns we want.
 //
-// You can adjust this by adding or deleting lines. The columns are
+// You can adjust this by adding or deleting lines. The selectedColumns are
 // numbered starting with 0 for county_id to 66 for vtd_desc.
 //
-// See ncvoters.md for the list of all columns available.
-var columns = map[int]string{
+// See ncvoters.md for the list of all selectedColumns available.
+var selectedColumns = map[int]string{
 	0:  "county_id",
 	2:  "voter_reg_num",
 	4:  "last_name",
@@ -58,7 +58,7 @@ type Column struct {
 	name   string // column name
 }
 
-var columnsAsStruct = getColumnsAsStruct()
+var columns = getColumnsAsStruct()
 
 func main() {
 
@@ -76,18 +76,4 @@ func main() {
 	}
 	log.Println("Created empty database")
 
-}
-
-// getColumnsAsStruct returns a list of Column structs in column number order
-func getColumnsAsStruct() []Column {
-	var cnStructs = make([]Column, 0, len(columns))
-	cns := getColumnNumbers()
-	cnn := getColumnNames()
-	for i := 0; i < len(columns); i++ {
-		var cnStruct Column
-		cnStruct.number = cns[i]
-		cnStruct.name = cnn[i]
-		cnStructs = append(cnStructs, cnStruct)
-	}
-	return cnStructs
 }

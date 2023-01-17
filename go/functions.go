@@ -40,9 +40,9 @@ func fileExists(filename string) bool {
 func getColumnNames() []string {
 	var names []string
 	columnNumbers := getColumnNumbers()
-	for i := 0; i < len(columns); i++ {
+	for i := 0; i < len(selectedColumns); i++ {
 		columnNumber := columnNumbers[i]
-		name := columns[columnNumber]
+		name := selectedColumns[columnNumber]
 		names = append(names, name)
 	}
 	return names
@@ -50,8 +50,8 @@ func getColumnNames() []string {
 
 // getColumnNumbers returns the column numbers in sorted order
 func getColumnNumbers() []int {
-	var columnNumbers = make([]int, 0, len(columns))
-	for k := range columns {
+	var columnNumbers = make([]int, 0, len(selectedColumns))
+	for k := range selectedColumns {
 		columnNumbers = append(columnNumbers, k)
 	}
 	sort.Ints(columnNumbers)
@@ -60,10 +60,10 @@ func getColumnNumbers() []int {
 
 // getColumnsAsStruct returns a list of Column structs in column number order
 func getColumnsAsStruct() []Column {
-	var cnStructs = make([]Column, 0, len(columns))
+	var cnStructs = make([]Column, 0, len(selectedColumns))
 	cns := getColumnNumbers()
 	cnn := getColumnNames()
-	for i := 0; i < len(columns); i++ {
+	for i := 0; i < len(selectedColumns); i++ {
 		var cnStruct Column
 		cnStruct.number = cns[i]
 		cnStruct.name = cnn[i]
