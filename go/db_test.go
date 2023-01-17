@@ -1,7 +1,7 @@
 package main
 
 import (
-	"fmt"
+	"strings"
 	"testing"
 )
 
@@ -10,7 +10,9 @@ func TestBuildSQL(t *testing.T) {
 	if err != nil {
 		t.Errorf("Could not create SQL, err=%s", err)
 	}
-	fmt.Println(sql)
+	if !strings.HasPrefix(sql, "CREATE") {
+		t.Errorf("SQL does not start with CREATE: %s", sql)
+	}
 }
 
 func TestGoodConnect(t *testing.T) {

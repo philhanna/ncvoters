@@ -64,4 +64,11 @@ func main() {
 		log.Fatalf("Step 1 failed: %v", err)
 	}
 	log.Printf("zip file size is %d bytes", filesize)
+
+	err = step2()
+	if err != nil {
+		log.Fatalf("Step 2 failed: %v", err)
+	}
+	log.Println("Created empty database")
+
 }
