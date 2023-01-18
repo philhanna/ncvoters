@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"io"
 	"log"
 	"net/http"
@@ -16,19 +15,24 @@ func step1() (int64, error) {
 	 * website. Skip the download if the file already exists locally.
 	 *******************************************************************/
 
-	var nBytes int64
+	var (
+		err         error
+		nBytes      int64
+		resp        *http.Response
+		zipFileName string
+	)
 
 	// If zip file already exists in /tmp, skip the download,
 	// just return the size
 
-	zipFileName := filepath.Join(os.TempDir(), "ncvoter_Statewide.zip")
+	zipFileName = filepath.Join(os.TempDir(), "ncvoter_Statewide.zip")
 	if fileExists(zipFileName) {
 
 		// Make sure the zipfile isn't a partial one.
 		_, err := assertZipfileIsntPartial(zipFileName)
 		if err != nil {
-			errmsg := fmt.Errorf("Could not open zip file %v: %s", zipFileName, err)
-			return 0, errmsg
+			log.Println("Existing zip file is corrupted.  Will recreate.")
+			goto download
 		}
 
 		// Tell the user that we are using an existing file
@@ -48,12 +52,14 @@ func step1() (int64, error) {
 	}
 
 	// Otherwize, download the file
+
+download:
+
 	source := dataSourceUrl
 	log.Printf("start, source=%s", source)
 
 	// Make an HTTP request for the source zip file
-	resp, err := http.Get(source)
-	if err != nil {
+	if resp, err = http.Get(source); err != nil {
 		log.Fatalf("err=%s\n", err)
 	}
 	defer resp.Body.Close()
