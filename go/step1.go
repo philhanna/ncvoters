@@ -2,6 +2,7 @@ package main
 
 import (
 	"io"
+	"io/fs"
 	"log"
 	"net/http"
 	"os"
@@ -17,6 +18,8 @@ func step1() (int64, error) {
 
 	var (
 		err         error
+		fi          fs.FileInfo
+		file        *os.File
 		nBytes      int64
 		resp        *http.Response
 		zipFileName string
@@ -29,7 +32,7 @@ func step1() (int64, error) {
 	if fileExists(zipFileName) {
 
 		// Make sure the zipfile isn't a partial one.
-		_, err := assertZipfileIsntPartial(zipFileName)
+		_, err = assertZipfileIsntPartial(zipFileName)
 		if err != nil {
 			log.Println("Existing zip file is corrupted.  Will recreate.")
 			goto download
@@ -39,11 +42,11 @@ func step1() (int64, error) {
 		log.Printf("Using existing zip file %s", zipFileName)
 
 		// Get the file size
-		file, err := os.Open(zipFileName)
+		file, err = os.Open(zipFileName)
 		if err != nil {
 			log.Fatal(err)
 		}
-		fi, err := file.Stat()
+		fi, err = file.Stat()
 		if err != nil {
 			log.Fatal(err)
 		}
