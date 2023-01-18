@@ -17,23 +17,25 @@ func step1() (int64, error) {
 	 *******************************************************************/
 
 	var (
+		chunk       []byte
 		err         error
 		fi          fs.FileInfo
 		file        *os.File
+		fp          *os.File
+		n           int64
 		nBytes      int64
 		resp        *http.Response
+		source      string
 		zipFileName string
 	)
 
 	// If zip file already exists in /tmp, skip the download,
 	// just return the size
-
 	zipFileName = filepath.Join(os.TempDir(), "ncvoter_Statewide.zip")
 	if fileExists(zipFileName) {
 
 		// Make sure the zipfile isn't a partial one.
-		_, err = assertZipfileIsntPartial(zipFileName)
-		if err != nil {
+		if _, err = assertZipfileIsntPartial(zipFileName); err != nil {
 			log.Println("Existing zip file is corrupted.  Will recreate.")
 			goto download
 		}
@@ -42,12 +44,10 @@ func step1() (int64, error) {
 		log.Printf("Using existing zip file %s", zipFileName)
 
 		// Get the file size
-		file, err = os.Open(zipFileName)
-		if err != nil {
+		if file, err = os.Open(zipFileName); err != nil {
 			log.Fatal(err)
 		}
-		fi, err = file.Stat()
-		if err != nil {
+		if fi, err = file.Stat(); err != nil {
 			log.Fatal(err)
 		}
 		nBytes = fi.Size()
@@ -58,7 +58,7 @@ func step1() (int64, error) {
 
 download:
 
-	source := dataSourceUrl
+	source = dataSourceUrl
 	log.Printf("start, source=%s", source)
 
 	// Make an HTTP request for the source zip file
@@ -68,29 +68,28 @@ download:
 	defer resp.Body.Close()
 
 	// Create the output zip file
-	fp, err := os.Create(zipFileName)
-	if err != nil {
+	if fp, err = os.Create(zipFileName); err != nil {
 		log.Fatalf("Could not open %s for output, err=%v\n", zipFileName, err)
 	}
 	defer fp.Close()
 
 	// Read from the HTTP stream and write to the output zip file
-	chunk := make([]byte, zipChunkSize)
+	chunk = make([]byte, zipChunkSize)
 	nBytes = 0
 	for i := 0; true; i += 1 {
 
 		// Read zipChunkSize bytes from the HTTP stream.
 		// If number of bytes is zero, we are done
 		log.Printf("Reading chunk %d, %d bytes so far", i, nBytes)
-		n, err := io.ReadAtLeast(resp.Body, chunk, zipChunkSize)
-		nBytes += int64(n)
+		shortN, err := io.ReadAtLeast(resp.Body, chunk, zipChunkSize)
+		n = int64(shortN)
+		nBytes += n
 		if n == 0 {
 			break
 		}
 
 		// Then write the chunk slice to the output zip file
-		_, err = fp.Write(chunk[0:n])
-		if err != nil {
+		if _, err = fp.Write(chunk[0:n]); err != nil {
 			log.Printf("err=%v", err)
 			break
 		}
