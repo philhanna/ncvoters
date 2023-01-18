@@ -7,6 +7,8 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+
+	commas "github.com/philhanna/commas"
 )
 
 func step1() (int64, error) {
@@ -80,7 +82,7 @@ download:
 
 		// Read zipChunkSize bytes from the HTTP stream.
 		// If number of bytes is zero, we are done
-		log.Printf("Reading chunk %d, %d bytes so far", i, nBytes)
+		log.Printf("Reading chunk %d, %s bytes so far", i, commas.Format64(nBytes))
 		shortN, err := io.ReadAtLeast(resp.Body, chunk, zipChunkSize)
 		n = int64(shortN)
 		nBytes += n

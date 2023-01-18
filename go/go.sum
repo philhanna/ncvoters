@@ -1,2 +1,6 @@
 github.com/mattn/go-sqlite3 v1.14.16 h1:yOQRA0RpS5PFz/oikGwBEqvAWhWg5ufRz4ETLjwpU1Y=
 github.com/mattn/go-sqlite3 v1.14.16/go.mod h1:2eHXhiwb8IkHr+BDWZGa96P6+rkvnG63S2DGjv9HUNg=
+github.com/philhanna/commas v1.0.1 h1:HDtg9scxgDMtmLYktjCZgLXOZzBqVLReDOg/jJnViMg=
+github.com/philhanna/commas v1.0.1/go.mod h1:+oZfMHiqN6u4kFFmn/rNHw0xLf8ktxBBRfoywATne5c=
+github.com/philhanna/commas v1.1.0 h1:hHMe3kUIaDGU0Wltxmvjs8O3z4FXEta3Tr8pjECc78k=
+github.com/philhanna/commas v1.1.0/go.mod h1:+oZfMHiqN6u4kFFmn/rNHw0xLf8ktxBBRfoywATne5c=

@@ -4,6 +4,8 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+
+	commas "github.com/philhanna/commas"
 )
 
 type Column struct {
@@ -63,14 +65,16 @@ var (
 )
 
 func main() {
-	var filesize int64
-	var err error
+	var (
+		filesize int64
+		err      error
+	)
 
 	// Step 1. Download the latest zip file
 	if filesize, err = step1(); err != nil {
 		log.Fatalf("Step 1 failed: %v", err)
 	}
-	log.Printf("zip file size is %d bytes", filesize)
+	log.Printf("zip file size is %s bytes", commas.Format64(filesize))
 
 	// Step 2. Create an empty voter database with just the table definition.
 	if err = step2(); err != nil {
