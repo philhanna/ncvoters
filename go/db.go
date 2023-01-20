@@ -52,3 +52,15 @@ func connect(fileName string) (*sql.DB, error) {
 
 	return db, nil
 }
+
+// getMaxNameLength returns the length of the longest name in the list
+func getMaxNameLength(names []string) int {
+	maxLength := 0
+	for _, name := range names {
+		nameLength := len(name)
+		if nameLength > maxLength {
+			maxLength = nameLength
+		}
+	}
+	return maxLength
+}

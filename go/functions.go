@@ -1,31 +1,9 @@
 package main
 
 import (
-	"archive/zip"
 	"os"
 	"sort"
 )
-
-// assertZipfileIsntPartial checks whether the specified zip file
-// can be opened correctly.
-func assertZipfileIsntPartial(filename string) (*zip.ReadCloser, error) {
-	archive, err := zip.OpenReader(filename)
-	if err != nil {
-		return nil, err
-	}
-	defer archive.Close()
-	return nil, nil
-
-}
-
-// deleteFile deletes the specified file, if it exists
-func deleteFile(filename string) error {
-	if fileExists(filename) {
-		err := os.Remove(filename)
-		return err
-	}
-	return nil
-}
 
 // fileExists returns true if the specified file exist
 func fileExists(filename string) bool {
@@ -70,16 +48,4 @@ func getColumnsAsStruct() []Column {
 		cnStructs = append(cnStructs, cnStruct)
 	}
 	return cnStructs
-}
-
-// getMaxNameLength returns the length of the longest name in the list
-func getMaxNameLength(names []string) int {
-	maxLength := 0
-	for _, name := range names {
-		nameLength := len(name)
-		if nameLength > maxLength {
-			maxLength = nameLength
-		}
-	}
-	return maxLength
 }

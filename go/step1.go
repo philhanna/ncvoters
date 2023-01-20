@@ -1,6 +1,7 @@
 package main
 
 import (
+	"archive/zip"
 	"io"
 	"io/fs"
 	"log"
@@ -99,4 +100,15 @@ download:
 	// Done
 
 	return nBytes, nil
+}
+
+// assertZipfileIsntPartial checks whether the specified zip file
+// can be opened correctly.
+func assertZipfileIsntPartial(filename string) (*zip.ReadCloser, error) {
+	archive, err := zip.OpenReader(filename)
+	if err != nil {
+		return nil, err
+	}
+	defer archive.Close()
+	return nil, nil
 }

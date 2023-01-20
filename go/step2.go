@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"os"
 
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -29,5 +30,14 @@ func step2() error {
 	}
 
 	// OK
+	return nil
+}
+
+// deleteFile deletes the specified file, if it exists
+func deleteFile(filename string) error {
+	if fileExists(filename) {
+		err := os.Remove(filename)
+		return err
+	}
 	return nil
 }
