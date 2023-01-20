@@ -16,7 +16,12 @@ func step3() (int64, error) {
 	// symbols for the number of columns we're using.
 	qmarks := getQMarks(len(columns))
 	insertStmt := fmt.Sprintf("INSERT INTO voters VALUES(%s)", qmarks)
-	log.Println("DEBUG: ", insertStmt)
+	log.Printf("DEBUG: insert statement is %s", insertStmt)
+
+	// Create rows filtered by the list of columns.  The first row,
+	// which contains the column names, is automatically ignored.
+
+	// Done
 	return 0, nil
 }
 
