@@ -65,20 +65,31 @@ var (
 )
 
 func main() {
+
 	var (
-		filesize int64
 		err      error
+		filesize int64
+		count    int64
 	)
 
-	// Step 1. Download the latest zip file
-	if filesize, err = step1(); err != nil {
+	// Step 1: Download the latest zip file
+	filesize, err = step1()
+	if err != nil {
 		log.Fatalf("Step 1 failed: %v", err)
 	}
 	log.Printf("zip file size is %s bytes", commas.Format64(filesize))
 
-	// Step 2. Create an empty voter database with just the table definition.
-	if err = step2(); err != nil {
+	// Step 2: Create an empty voter database with just the table definition.
+	err = step2()
+	if err != nil {
 		log.Fatalf("Step 2 failed: %v", err)
 	}
-	log.Println("Created empty database", dbFileName)
+	log.Printf("Created empty database %s", dbFileName)
+
+	// Step 3: Load rows into the new database
+	count, err = step3()
+	if err != nil {
+		log.Fatalf("Step 3 failed: %v", err)
+	}
+	log.Printf("end, total voters = %s", commas.Format64(count))
 }

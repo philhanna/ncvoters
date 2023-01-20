@@ -50,3 +50,11 @@ func TestPartialZip(t *testing.T) {
 		t.Errorf("%s should have been detected as partial", zipFileName)
 	}
 }
+
+func TestGetQMarks(t *testing.T) {
+	expected := "?, ?, ?"
+	actual := getQMarks(3)
+	if actual != expected {
+		t.Errorf("Expected %s, got %s", expected, actual)
+	}
+}
