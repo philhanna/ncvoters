@@ -77,7 +77,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("Step 1 failed: %v", err)
 	}
-	log.Printf("zip file size is %s bytes", commas.Format64(filesize))
+	log.Printf("zip file size is %s bytes", commas.Format(filesize))
 
 	// Step 2: Create an empty voter database with just the table definition.
 	err = step2()
@@ -91,5 +91,5 @@ func main() {
 	if err != nil {
 		log.Fatalf("Step 3 failed: %v", err)
 	}
-	log.Printf("end, total voters = %s", commas.Format64(count))
+	log.Printf("end, total voters = %s", commas.Format(count))
 }
