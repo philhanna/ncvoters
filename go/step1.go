@@ -12,6 +12,8 @@ import (
 	commas "github.com/philhanna/commas"
 )
 
+var zipFileName = filepath.Join(os.TempDir(), "ncvoter_Statewide.zip")
+
 func step1() (int64, error) {
 
 	/*******************************************************************
@@ -20,21 +22,19 @@ func step1() (int64, error) {
 	 *******************************************************************/
 
 	var (
-		chunk       []byte
-		err         error
-		fi          fs.FileInfo
-		file        *os.File
-		fp          *os.File
-		n           int64
-		nBytes      int64
-		resp        *http.Response
-		source      string
-		zipFileName string
+		chunk  []byte
+		err    error
+		fi     fs.FileInfo
+		file   *os.File
+		fp     *os.File
+		n      int64
+		nBytes int64
+		resp   *http.Response
+		source string
 	)
 
 	// If zip file already exists in /tmp, skip the download,
 	// just return the size
-	zipFileName = filepath.Join(os.TempDir(), "ncvoter_Statewide.zip")
 	if fileExists(zipFileName) {
 
 		// Make sure the zipfile isn't a partial one.
