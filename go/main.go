@@ -84,7 +84,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("Step 2 failed: %v", err)
 	}
-	log.Printf("Created empty database %s", dbFileName)
+	log.Printf("Created empty database \"%s\"", dbFileName)
 
 	// Step 3: Load rows into the new database
 	count, err = step3()
