@@ -18,7 +18,7 @@ func step3() (int64, error) {
 
 	// Open a connection to the SQL database to be created
 	var con *sql.DB
-	con, err := sql.Open("sqlite3", "ncvoters.db")
+	con, err := sql.Open("sqlite3", dbFileName)
 	if err != nil {
 		log.Fatal(err)
 	}
