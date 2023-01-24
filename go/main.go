@@ -72,6 +72,9 @@ func main() {
 		count    int64
 	)
 
+	// Show time, file, and linenumbers on log messages
+	log.SetFlags(log.Ltime | log.Lshortfile)
+
 	// Step 1: Download the latest zip file
 	filesize, err = step1()
 	if err != nil {

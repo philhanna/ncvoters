@@ -33,7 +33,6 @@ func step3() (int64, error) {
 	// symbols for the number of columns we're using.
 	qmarks := getQMarks(len(columns))
 	insertStmt := fmt.Sprintf("INSERT INTO voters VALUES(%s)", qmarks)
-	log.Printf("DEBUG: %s", insertStmt)
 
 	// Open the zip file for reading
 	r, err := zip.OpenReader(zipFileName)
@@ -84,6 +83,28 @@ func step3() (int64, error) {
 		for cnumber, _ := range columns {
 			outrow = append(outrow, row[cnumber])
 		}
+
+		_, err = con.Exec(insertStmt,
+			outrow[0],
+			outrow[1],
+			outrow[2],
+			outrow[3],
+			outrow[4],
+			outrow[5],
+			outrow[6],
+			outrow[7],
+			outrow[8],
+			outrow[9],
+			outrow[10],
+			outrow[11],
+			outrow[12],
+			outrow[13],
+			outrow[14],
+			outrow[15],
+			outrow[16],
+			outrow[17],
+			outrow[18],
+			outrow[19])
 
 	}
 
