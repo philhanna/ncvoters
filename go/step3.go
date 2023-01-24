@@ -14,7 +14,7 @@ import (
 
 // Step 3: Load rows into the new database
 func step3() (int64, error) {
-	log.Println("Start loading voters into the database")
+	log.Println("Started loading voters into the database")
 
 	// Open a connection to the SQL database to be created
 	var con *sql.DB
@@ -63,17 +63,28 @@ func step3() (int64, error) {
 	var count int64
 
 	for {
-		_, err := csv.Read()
+		row, err := csv.Read()
 		if err == io.EOF {
 			break
 		}
 		count++
+
+		// Skip the column headers row
 		if count == 1 {
 			continue
 		}
+
+		// Log a progress message every million records created
 		if count%1000000 == 0 {
 			log.Printf("voters so far = %s", commas.Format(count))
 		}
+
+		// Select only certain columns
+		outrow := []string{}
+		for cnumber, _ := range columns {
+			outrow = append(outrow, row[cnumber])
+		}
+
 	}
 
 	// Done

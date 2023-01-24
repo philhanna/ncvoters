@@ -20,7 +20,7 @@ func step2() error {
 	}
 
 	// Get the SQL needed to create the voters table
-	sqlForTableCreation, err := buildSQL()
+	sqlForTableCreation, _ := buildSQL()
 
 	// Run the SQL to create the voters table
 	_, err = con.Exec(sqlForTableCreation)
