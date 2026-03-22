@@ -131,23 +131,11 @@ See `selected_columns` in the sample configuration YAML file for a list of what
 I selected as the columns of interest.  You can change this by adding or
 deleting lines.
 
-## Installation
-<a id="installation"></a>
-- Ensure that you have Go installed.  See [https://go.dev/doc/install](https://go.dev/doc/install)
-for instructions.
-
-- Go to the Github repository at
-[https://github.com/philhanna/go-ncvoters](https://github.com/philhanna/go-ncvoters).
-You will see a green button labeled "Code":
-Click the down arrow and in the resulting dialog box, click "Download ZIP",
-and unzip the resulting file in your home directory.
-![Code](https://github.com/philhanna/go-ncvoters/assets/3708685/d12883b8-8335-4c11-9db1-5f85ab8e0462)
-
 ## Configuration
 <a id="configuration"></a>
-Create a subdirectory named `go-ncvoters` in your user configuration directory, which is:
-   - On Unix/Mac: `$HOME/.config/go-ncvoters`
-   - On Windows: `%USERPROFILE%\AppData\Roaming\go-ncvoters`
+Create a subdirectory named `ncvoters` in your user configuration directory, which is:
+   - On Unix/Mac: `$HOME/.config/ncvoters`
+   - On Windows: `%USERPROFILE%\AppData\Roaming\ncvoters`
   
 Copy `sample_config.yaml` to that directory, renaming it `config.yaml`.  There are two sections:
 
@@ -223,44 +211,6 @@ This allows you to continue the SQL onto multiple lines.
 ## Running the application
 <a id="running-the-application"></a>
 
-There is a mainline in `cmd/get_voter_data.go` that will run the download
-application.
-
-You can also compile a native executable by running the following command from
-the root directory of the project:
-
-```bash
-$ go install cmd/create/get_voter_data.go
-```
-
-This will create an executable in your path named `get_voter_data`, which you can invoke from a command line like any other program:
-
-```bash
-$ get_voter_data -h
-usage: get_voter_data [OPTIONS] [DBNAME]
-
-Creates a database of North Carolina voter registrations
-
-positional arguments:
-  dbname         Name of database file to be created (default /tmp/voter_data.db)
-
-options:
-  -h, --help     Show this help text and exit
-  -f, --force    Force the zip file to be downloaded, not reused
-
-```
-This takes a little over two minutes on my Linux machine.
-
-I generally run this every Saturday night, since the database is updated on the
-website that day. The database is built as `voter_data.db` in the `/tmp`
-directory (`%TEMP%`, on Windows).  I typically create a soft link to it in my home
-directory and the desktop for quick access.
-
-You need to delete the .zip file from `/tmp` before the next Saturday update,
-because the system will reuse the existing ZIP file if it exists.  You can do
-these delete and download steps in your [cron](https://en.wikipedia.org/wiki/Cron) table
-so that it is all done automatically every Saturday night.
-
 ## Viewing the database
 <a id="viewing-the-database"></a>
 I use [DB Browser for SQLite](https://sqlitebrowser.org/) to work with the database.
@@ -276,12 +226,9 @@ SQLite3 is also supported natively in the standard Python library.
 
 ## References
 <a id="references"></a>
-- [Github repository](https://github.com/philhanna/go-ncvoters)
+- [Github repository](https://github.com/philhanna/ncvoters)
 - [NC Board of Elections](https://www.ncsbe.gov/)
 - [File layout](https://s3.amazonaws.com/dl.ncsbe.gov/data/layout_ncvoter.txt)
 - [SQLite home page](https://sqlite.org/index.html)
 - [DB Browser for SQLite](https://sqlitebrowser.org/)
 - [SQLite system tables](https://www.techonthenet.com/sqlite/sys_tables/index.php)
-
-[idGoReportCard]: https://goreportcard.com/report/github.com/philhanna/go-ncvoters
-[idPkgGoDev]: https://pkg.go.dev/github.com/philhanna/go-ncvoters
