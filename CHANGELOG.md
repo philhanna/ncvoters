@@ -6,6 +6,13 @@ and the format is based on [Keep a Changelog].
 
 ## [Unreleased]
 
+### Changed
+
+- Split `application/use_cases.py` into one module per use case:
+  `add_metadata.py`, `apply_indexes.py`, `apply_views.py`,
+  `create_voter_database.py`; `application/__init__.py` re-exports all
+  public names for backwards compatibility
+
 ## [1.0.0] - 2026-03-22
 
 First stable public release.
