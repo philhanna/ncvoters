@@ -1,11 +1,11 @@
-"""Tests for the ApplyViews use case."""
+"""Tests for the ApplyIndexes and ApplyViews use cases."""
 
 import sqlite3
 
 import pytest
 
 from ncvoters.adapters.sqlite_repo import SqliteVoterRepository
-from ncvoters.application.use_cases import ApplyViews
+from ncvoters.application.use_cases import ApplyIndexes, ApplyViews
 from ncvoters.domain.models import Configuration
 
 
@@ -169,6 +169,136 @@ def test_incremental_failure_does_not_abort_remaining_views(tmp_path) -> None:
     _write_view(views_dir, "good.sql", "CREATE VIEW good AS SELECT * FROM voters")
 
     result = ApplyViews(repo, views_dir, quiet=True).execute(incremental=False)
+
+    assert "good" in result.applied
+    assert len(result.failed) == 1
+
+
+# ===========================================================================
+# ApplyIndexes tests
+# ===========================================================================
+
+def _write_index(indexes_dir, filename: str, sql: str) -> None:
+    (indexes_dir / filename).write_text(sql, encoding="utf-8")
+
+
+# ---------------------------------------------------------------------------
+# ApplyIndexes — full-build mode (incremental=False)
+# ---------------------------------------------------------------------------
+
+def test_apply_indexes_creates_new_index(tmp_path) -> None:
+    db = str(tmp_path / "i.db")
+    repo = _make_repo(db)
+    indexes_dir = tmp_path / "indexes"
+    indexes_dir.mkdir()
+    _write_index(indexes_dir, "names.sql", "CREATE INDEX names ON voters (last_name, first_name)")
+
+    result = ApplyIndexes(repo, indexes_dir, quiet=True).execute(incremental=False)
+
+    assert "names" in result.applied
+    assert result.skipped == []
+    assert result.failed == []
+
+
+def test_apply_indexes_empty_dir_returns_empty_result(tmp_path) -> None:
+    db = str(tmp_path / "i.db")
+    repo = _make_repo(db)
+    indexes_dir = tmp_path / "indexes"
+    indexes_dir.mkdir()
+
+    result = ApplyIndexes(repo, indexes_dir, quiet=True).execute(incremental=False)
+
+    assert result.applied == []
+    assert result.skipped == []
+    assert result.failed == []
+
+
+def test_apply_indexes_missing_dir_returns_empty_result(tmp_path) -> None:
+    db = str(tmp_path / "i.db")
+    repo = _make_repo(db)
+
+    result = ApplyIndexes(repo, tmp_path / "no_indexes", quiet=True).execute(incremental=False)
+
+    assert result.applied == []
+
+
+def test_apply_indexes_bad_sql_goes_to_failed(tmp_path) -> None:
+    db = str(tmp_path / "i.db")
+    repo = _make_repo(db)
+    indexes_dir = tmp_path / "indexes"
+    indexes_dir.mkdir()
+    _write_index(indexes_dir, "bad.sql", "CREATE INDEX bad ON voters (no_such_col FOOBAR)")
+
+    result = ApplyIndexes(repo, indexes_dir, quiet=True).execute(incremental=False)
+
+    assert len(result.failed) == 1
+    assert result.failed[0][0] == "bad"
+    assert result.applied == []
+
+
+def test_apply_indexes_invalid_sql_goes_to_failed(tmp_path) -> None:
+    db = str(tmp_path / "i.db")
+    repo = _make_repo(db)
+    indexes_dir = tmp_path / "indexes"
+    indexes_dir.mkdir()
+    _write_index(indexes_dir, "notanindex.sql", "SELECT 1")  # no CREATE INDEX
+
+    result = ApplyIndexes(repo, indexes_dir, quiet=True).execute(incremental=False)
+
+    assert len(result.failed) == 1
+    assert result.applied == []
+
+
+# ---------------------------------------------------------------------------
+# ApplyIndexes — incremental mode (incremental=True)
+# ---------------------------------------------------------------------------
+
+def test_apply_indexes_incremental_skips_unchanged(tmp_path) -> None:
+    db = str(tmp_path / "i.db")
+    repo = _make_repo(db)
+    indexes_dir = tmp_path / "indexes"
+    indexes_dir.mkdir()
+    sql = "CREATE INDEX names ON voters (last_name, first_name)"
+    _write_index(indexes_dir, "names.sql", sql)
+
+    ApplyIndexes(repo, indexes_dir, quiet=True).execute(incremental=False)
+    result = ApplyIndexes(repo, indexes_dir, quiet=True).execute(incremental=True)
+
+    assert "names" in result.skipped
+    assert result.applied == []
+
+
+def test_apply_indexes_incremental_recreates_changed(tmp_path) -> None:
+    db = str(tmp_path / "i.db")
+    repo = _make_repo(db)
+    indexes_dir = tmp_path / "indexes"
+    indexes_dir.mkdir()
+    _write_index(indexes_dir, "names.sql", "CREATE INDEX names ON voters (last_name)")
+
+    ApplyIndexes(repo, indexes_dir, quiet=True).execute(incremental=False)
+
+    _write_index(indexes_dir, "names.sql", "CREATE INDEX names ON voters (last_name, first_name)")
+    result = ApplyIndexes(repo, indexes_dir, quiet=True).execute(incremental=True)
+
+    assert "names" in result.applied
+    assert result.skipped == []
+
+    with sqlite3.connect(db) as conn:
+        row = conn.execute(
+            "SELECT sql FROM sqlite_master WHERE type='index' AND name='names'"
+        ).fetchone()
+    assert "first_name" in (row[0] if row else "")
+
+
+def test_apply_indexes_incremental_failure_does_not_abort(tmp_path) -> None:
+    db = str(tmp_path / "i.db")
+    repo = _make_repo(db)
+    indexes_dir = tmp_path / "indexes"
+    indexes_dir.mkdir()
+    _write_index(indexes_dir, "bad.sql", "CREATE INDEX bad ON voters (no_col OOPS)")
+    _write_index(indexes_dir, "good.sql", "CREATE INDEX good ON voters (last_name)")
+
+    result = ApplyIndexes(repo, indexes_dir, quiet=True).execute(incremental=False)
 
     assert "good" in result.applied
     assert len(result.failed) == 1

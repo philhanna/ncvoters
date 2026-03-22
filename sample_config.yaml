@@ -4,6 +4,11 @@
 # sanitize_columns: subset of selected_columns where embedded whitespace is
 #                   collapsed to a single space and leading/trailing space trimmed.
 #
+# Indexes are stored as individual SQL files in ~/.config/ncvoters/indexes/.
+# Each file should contain a single CREATE INDEX <name> ON <table> (...) statement.
+# Indexes are applied automatically after every full build, and can also be
+# applied incrementally to an existing database with the apply-indexes command.
+#
 # Views are stored as individual SQL files in ~/.config/ncvoters/views/.
 # Each file should contain a single CREATE VIEW <name> AS ... statement.
 # Views are applied automatically after every full build, and can also be

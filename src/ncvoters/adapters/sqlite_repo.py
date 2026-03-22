@@ -29,10 +29,16 @@ class SqliteVoterRepository(VoterRepositoryPort):
         with sqlite3.connect(self._db_path) as conn:
             conn.executemany(sql, rows)
 
-    def create_indexes(self) -> None:
+    def apply_index(self, sql: str) -> None:
         with sqlite3.connect(self._db_path) as conn:
-            conn.execute("CREATE INDEX names ON voters (last_name, first_name, middle_name)")
-            conn.execute("CREATE INDEX addresses ON voters (res_street_address)")
+            conn.execute(sql)
+
+    def existing_index_sql(self, name: str) -> str | None:
+        with sqlite3.connect(self._db_path) as conn:
+            row = conn.execute(
+                "SELECT sql FROM sqlite_master WHERE type='index' AND name=?", (name,)
+            ).fetchone()
+        return row[0] if row else None
 
     def apply_view(self, sql: str) -> None:
         with sqlite3.connect(self._db_path) as conn:

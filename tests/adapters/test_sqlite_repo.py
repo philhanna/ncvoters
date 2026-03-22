@@ -48,3 +48,29 @@ def test_existing_view_sql_returns_sql_after_creation(tmp_path) -> None:
     stored = repo.existing_view_sql("smiths")
     assert stored is not None
     assert "smiths" in stored
+
+
+def test_apply_index_creates_index(tmp_path) -> None:
+    db, repo = _make_repo(tmp_path)
+    repo.insert_voters(iter([["Smith", "John"]]))
+    repo.apply_index("CREATE INDEX names ON voters (last_name, first_name)")
+
+    with sqlite3.connect(db) as conn:
+        row = conn.execute(
+            "SELECT name FROM sqlite_master WHERE type='index' AND name='names'"
+        ).fetchone()
+    assert row is not None
+
+
+def test_existing_index_sql_returns_none_when_absent(tmp_path) -> None:
+    _, repo = _make_repo(tmp_path)
+    assert repo.existing_index_sql("no_such_index") is None
+
+
+def test_existing_index_sql_returns_sql_after_creation(tmp_path) -> None:
+    db, repo = _make_repo(tmp_path)
+    repo.insert_voters(iter([["Smith", "John"]]))
+    repo.apply_index("CREATE INDEX names ON voters (last_name, first_name)")
+    stored = repo.existing_index_sql("names")
+    assert stored is not None
+    assert "names" in stored
