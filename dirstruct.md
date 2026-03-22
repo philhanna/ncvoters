@@ -21,14 +21,14 @@ ncvoters/
 
 | Entry | Purpose |
 |---|---|
-| `pyproject.toml` | Single source of truth for package metadata, dependencies, build backend (Hatchling), and pytest configuration. Declares the `get-voter-data` console script entry point. |
-| `sample_config.yaml` | Template the user copies to `~/.config/ncvoters/config.yaml`. Documents the `selected_columns` and `sanitize_columns` keys. |
-| `dirstruct.md` | This file. |
-| `LICENSE` | Project licence. |
-| `README.md` | Project overview and usage instructions. |
-| `src/` | Source root (PEP 517 `src` layout — keeps the package off `sys.path` during development unless explicitly installed). |
-| `tests/` | Pytest test suite, mirroring the `src/ncvoters/` sub-package tree. |
-| `go/` | Original Go implementation, retained for reference. |
+| [pyproject.toml](pyproject.toml) | Single source of truth for package metadata, dependencies, build backend (Hatchling), and pytest configuration. Declares the `get-voter-data` console script entry point. |
+| [sample_config.yaml](sample_config.yaml) | Template the user copies to `~/.config/ncvoters/config.yaml`. Documents the `selected_columns` and `sanitize_columns` keys. |
+| [dirstruct.md](dirstruct.md) | This file. |
+| [LICENSE](LICENSE) | Project licence. |
+| [README.md](README.md) | Project overview and usage instructions. |
+| [src/](src/) | Source root (PEP 517 `src` layout — keeps the package off `sys.path` during development unless explicitly installed). |
+| [tests/](tests/) | Pytest test suite, mirroring the `src/ncvoters/` sub-package tree. |
+| [go/](go/) | Original Go implementation, retained for reference. |
 
 ---
 
@@ -80,7 +80,7 @@ external dependencies** — no I/O, no third-party libraries.
 
 | File | Contents |
 |---|---|
-| `models.py` | Three dataclasses: `Configuration` (the user's column selections), `Column` (a single field from the NC BOE layout file), and `Layout` (the full parsed layout: all columns plus look-up code dictionaries for status, race, ethnicity, county, and reason). |
+| [domain/models.py](src/ncvoters/domain/models.py) | Three dataclasses: `Configuration` (the user's column selections), `Column` (a single field from the NC BOE layout file), and `Layout` (the full parsed layout: all columns plus look-up code dictionaries for status, race, ethnicity, county, and reason). |
 
 ### `ports/`
 
@@ -90,22 +90,22 @@ no implementation lives here.
 
 | File | Contents |
 |---|---|
-| `outbound.py` | Four outbound (driven) ports: `ConfigurationPort` — loads a `Configuration`; `FileDownloaderPort` — downloads a URL to a local path; `LayoutFetcherPort` — fetches and parses the NC BOE layout file into a `Layout`; `VoterRepositoryPort` — creates the voters table, bulk-inserts rows, and adds metadata tables to the database. |
+| [ports/outbound.py](src/ncvoters/ports/outbound.py) | Four outbound (driven) ports: `ConfigurationPort` — loads a `Configuration`; `FileDownloaderPort` — downloads a URL to a local path; `LayoutFetcherPort` — fetches and parses the NC BOE layout file into a `Layout`; `VoterRepositoryPort` — creates the voters table, bulk-inserts rows, and adds metadata tables to the database. |
 
 ### `adapters/`
 
 Concrete implementations of the port interfaces.  Each adapter is a
 self-contained infrastructure concern.  Swapping an adapter (e.g. replacing
 SQLite with PostgreSQL) requires changing only the relevant file here and the
-wiring in `cli/main.py`.
+wiring in [cli/main.py](src/ncvoters/cli/main.py).
 
 | File | Implements | Purpose |
 |---|---|---|
-| `progress.py` | *(standalone)* | `Progress` class — renders a single-line, carriage-return-updated progress bar to `stderr`. Tracks total, so-far, and elapsed time. |
-| `config_loader.py` | `ConfigurationPort` | `YamlConfigLoader` — reads `~/.config/ncvoters/config.yaml` using PyYAML and returns a `Configuration`. Raises `FileNotFoundError` with a helpful message if the file is absent. |
-| `downloader.py` | `FileDownloaderPort` | `HttpFileDownloader` — issues an HTTP HEAD request to obtain the content length, then streams the file to disk in 1 MB chunks while rendering a progress bar. |
-| `layout_fetcher.py` | `LayoutFetcherPort` | `NcboeLayoutFetcher` — downloads the NC BOE layout text file, appends the undocumented reason codes, writes the result to `/tmp/voter_layout.txt`, and parses it with a finite-state machine into a `Layout` object. The FSM states are: `INIT → LOOKING_FOR_COLUMNS_START → READING_COLUMNS → LOOKING_FOR_CODE_BLOCK → LOOKING_FOR_CODE_BLOCK_NAME → LOOKING_FOR_CODE_BLOCK_START → READING_CODE_BLOCK`. |
-| `sqlite_repo.py` | `VoterRepositoryPort` | `SqliteVoterRepository` — creates the `voters` table (columns derived from `Configuration.selected_columns`), bulk-inserts rows with `executemany`, and populates six metadata tables (`columns`, `status_codes`, `race_codes`, `ethnic_codes`, `county_codes`, `reason_codes`) using generated DDL. Single quotes inside values are escaped to prevent SQL errors. |
+| [adapters/progress.py](src/ncvoters/adapters/progress.py) | *(standalone)* | `Progress` class — renders a single-line, carriage-return-updated progress bar to `stderr`. Tracks total, so-far, and elapsed time. |
+| [adapters/config_loader.py](src/ncvoters/adapters/config_loader.py) | `ConfigurationPort` | `YamlConfigLoader` — reads `~/.config/ncvoters/config.yaml` using PyYAML and returns a `Configuration`. Raises `FileNotFoundError` with a helpful message if the file is absent. |
+| [adapters/downloader.py](src/ncvoters/adapters/downloader.py) | `FileDownloaderPort` | `HttpFileDownloader` — issues an HTTP HEAD request to obtain the content length, then streams the file to disk in 1 MB chunks while rendering a progress bar. |
+| [adapters/layout_fetcher.py](src/ncvoters/adapters/layout_fetcher.py) | `LayoutFetcherPort` | `NcboeLayoutFetcher` — downloads the NC BOE layout text file, appends the undocumented reason codes, writes the result to `/tmp/voter_layout.txt`, and parses it with a finite-state machine into a `Layout` object. The FSM states are: `INIT → LOOKING_FOR_COLUMNS_START → READING_COLUMNS → LOOKING_FOR_CODE_BLOCK → LOOKING_FOR_CODE_BLOCK_NAME → LOOKING_FOR_CODE_BLOCK_START → READING_CODE_BLOCK`. |
+| [adapters/sqlite_repo.py](src/ncvoters/adapters/sqlite_repo.py) | `VoterRepositoryPort` | `SqliteVoterRepository` — creates the `voters` table (columns derived from `Configuration.selected_columns`), bulk-inserts rows with `executemany`, and populates six metadata tables (`columns`, `status_codes`, `race_codes`, `ethnic_codes`, `county_codes`, `reason_codes`) using generated DDL. Single quotes inside values are escaped to prevent SQL errors. |
 
 ### `application/`
 
@@ -115,7 +115,7 @@ them independently testable without real infrastructure.
 
 | File | Contents |
 |---|---|
-| `use_cases.py` | **`CreateVoterDatabase`** — decides whether to reuse or re-download the zip file, deletes any existing database, creates the voters table, and streams rows from the embedded tab-delimited CSV (read via `csv.DictReader` over a `zipfile.ZipFile` entry, decoded as `latin-1`) through the repository in a single `executemany` call.  Applies whitespace sanitization to columns listed in `Configuration.sanitize_columns`.  Displays a progress bar using the uncompressed file size as an estimate of row count.  **`AddMetadata`** — delegates to `LayoutFetcherPort` to obtain a `Layout`, then calls `VoterRepositoryPort.add_metadata` to create and populate the six lookup tables. |
+| [application/use_cases.py](src/ncvoters/application/use_cases.py) | **`CreateVoterDatabase`** — decides whether to reuse or re-download the zip file, deletes any existing database, creates the voters table, and streams rows from the embedded tab-delimited CSV (read via `csv.DictReader` over a `zipfile.ZipFile` entry, decoded as `latin-1`) through the repository in a single `executemany` call.  Applies whitespace sanitization to columns listed in `Configuration.sanitize_columns`.  Displays a progress bar using the uncompressed file size as an estimate of row count.  **`AddMetadata`** — delegates to `LayoutFetcherPort` to obtain a `Layout`, then calls `VoterRepositoryPort.add_metadata` to create and populate the six lookup tables. |
 
 ### `cli/`
 
@@ -125,7 +125,7 @@ use cases in the correct order.
 
 | File | Contents |
 |---|---|
-| `main.py` | `main()` — the `get-voter-data` entry point declared in `pyproject.toml`. Parses flags (`-f/--force`, `-l/--limit`, `-m/--metadata`, `-q/--quiet`) and an optional positional `dbname` argument.  Instantiates `YamlConfigLoader`, `HttpFileDownloader`, `SqliteVoterRepository`, and `NcboeLayoutFetcher`, then calls `CreateVoterDatabase` and (optionally) `AddMetadata`. |
+| [cli/main.py](src/ncvoters/cli/main.py) | `main()` — the `get-voter-data` entry point declared in [pyproject.toml](pyproject.toml). Parses flags (`-f/--force`, `-l/--limit`, `-m/--metadata`, `-q/--quiet`) and an optional positional `dbname` argument.  Instantiates `YamlConfigLoader`, `HttpFileDownloader`, `SqliteVoterRepository`, and `NcboeLayoutFetcher`, then calls `CreateVoterDatabase` and (optionally) `AddMetadata`. |
 
 ---
 
@@ -151,11 +151,11 @@ tests/
 
 | File | What it tests |
 |---|---|
-| `domain/test_models.py` | `Configuration`, `Column`, and `Layout` dataclass construction and defaults. |
-| `adapters/test_config_loader.py` | `YamlConfigLoader` — happy path with a temp file, and `FileNotFoundError` on a missing path. |
-| `adapters/test_layout_fetcher.py` | `_parse_layout_file` — uses the `layout_ncvoter.txt` fixture from `go/testdata/` to verify that column names are parsed correctly. |
-| `adapters/test_sqlite_repo.py` | `SqliteVoterRepository` — creates a table, inserts two rows via the iterator interface, and asserts the rows are present via a direct `sqlite3` connection. |
-| `application/` | Placeholder package for future use-case integration tests. |
+| [tests/domain/test_models.py](tests/domain/test_models.py) | `Configuration`, `Column`, and `Layout` dataclass construction and defaults. |
+| [tests/adapters/test_config_loader.py](tests/adapters/test_config_loader.py) | `YamlConfigLoader` — happy path with a temp file, and `FileNotFoundError` on a missing path. |
+| [tests/adapters/test_layout_fetcher.py](tests/adapters/test_layout_fetcher.py) | `_parse_layout_file` — uses the `layout_ncvoter.txt` fixture from [go/testdata/](go/testdata/) to verify that column names are parsed correctly. |
+| [tests/adapters/test_sqlite_repo.py](tests/adapters/test_sqlite_repo.py) | `SqliteVoterRepository` — creates a table, inserts two rows via the iterator interface, and asserts the rows are present via a direct `sqlite3` connection. |
+| [tests/application/](tests/application/) | Placeholder package for future use-case integration tests. |
 
 ---
 
