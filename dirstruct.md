@@ -11,24 +11,26 @@ purpose of every file and directory.
 ncvoters/
 ├── pyproject.toml
 ├── sample_config.yaml
+├── CHANGELOG.md
 ├── dirstruct.md
 ├── LICENSE
 ├── README.md
+├── docs/
 ├── src/
-├── tests/
-└── go/
+└── tests/
 ```
 
 | Entry | Purpose |
 |---|---|
-| [pyproject.toml](pyproject.toml) | Single source of truth for package metadata, dependencies, build backend (Hatchling), and pytest configuration. Declares the `get-voter-data` console script entry point. |
+| [pyproject.toml](pyproject.toml) | Single source of truth for package metadata, dependencies, build backend (Hatchling), and pytest configuration. Declares the three console script entry points. |
 | [sample_config.yaml](sample_config.yaml) | Template the user copies to `~/.config/ncvoters/config.yaml`. Documents the `db_dir`, `selected_columns`, and `sanitize_columns` keys. |
+| [CHANGELOG.md](CHANGELOG.md) | Release history following the Keep a Changelog format. |
 | [dirstruct.md](dirstruct.md) | This file. |
 | [LICENSE](LICENSE) | Project licence. |
 | [README.md](README.md) | Project overview and usage instructions. |
+| [docs/](docs/) | Planning documents (`mplan.md`, `iplan.md`, `dplan.md`). |
 | [src/](src/) | Source root (PEP 517 `src` layout — keeps the package off `sys.path` during development unless explicitly installed). |
 | [tests/](tests/) | Pytest test suite, mirroring the `src/ncvoters/` sub-package tree. |
-| [go/](go/) | Original Go implementation, retained for reference. |
 
 ---
 
@@ -164,34 +166,11 @@ tests/
 |---|---|
 | [tests/domain/test_models.py](tests/domain/test_models.py) | `Configuration`, `Column`, and `Layout` dataclass construction and defaults. |
 | [tests/adapters/test_config_loader.py](tests/adapters/test_config_loader.py) | `YamlConfigLoader` — happy path with a temp file, and `FileNotFoundError` on a missing path. |
-| [tests/adapters/test_layout_fetcher.py](tests/adapters/test_layout_fetcher.py) | `_parse_layout_file` — uses the `layout_ncvoter.txt` fixture from [go/testdata/](go/testdata/) to verify that column names are parsed correctly. |
+| [tests/adapters/test_layout_fetcher.py](tests/adapters/test_layout_fetcher.py) | `_parse_layout_file` — uses a bundled `layout_ncvoter.txt` fixture to verify that column names are parsed correctly. |
 | [tests/adapters/test_sqlite_repo.py](tests/adapters/test_sqlite_repo.py) | `SqliteVoterRepository` — creates a table, inserts rows, asserts rows round-trip correctly, and tests `apply_view` / `existing_view_sql`. |
 | [tests/adapters/test_index_loader.py](tests/adapters/test_index_loader.py) | `load_index_files`, `extract_index_name` — sorting, stripping, name extraction (including `UNIQUE INDEX`), and error cases. |
 | [tests/adapters/test_view_loader.py](tests/adapters/test_view_loader.py) | `load_view_files`, `extract_view_name`, `normalise_sql` — sorting, stripping, name extraction, whitespace collapsing, and error cases. |
-| [tests/application/test_use_cases.py](tests/application/test_use_cases.py) | `ApplyViews` — full-build and incremental modes: new view creation, unchanged-view skipping, changed-view recreation, syntax-error failure isolation, and multi-view partial failure. |
-
----
-
-## `go/`
-
-The original Go implementation, kept for reference.  It is not built or
-tested as part of the Python project.
-
-```
-go/
-├── go.mod / go.sum          # Go module definition and checksums
-├── config.go                # YAML config loading
-├── mapreduce.go             # Generic Map/Reduce over channels
-├── doc.go                   # Package-level godoc
-├── cmd/create/
-│   └── get_voter_data.go    # Go CLI entry point
-├── create/                  # Database creation logic
-├── download/                # HTTP download logic
-├── util/                    # File existence, zip validation, progress
-├── webdata/                 # Layout parsing and metadata DDL generation
-├── testdata/                # Fixtures: zip files, layout text, CSV
-└── sample_config.yaml       # Go-specific sample config
-```
+| [tests/application/test_use_cases.py](tests/application/test_use_cases.py) | `ApplyViews` and `ApplyIndexes` — full-build and incremental modes: creation, unchanged skipping, recreation on change, failure isolation.  Also tests `_rename_existing_db`. |
 
 ---
 
@@ -204,4 +183,4 @@ go/
 | `~/.config/ncvoters/views/` | Directory of `.sql` view definitions, one file per view.  Applied automatically on every full build; also applied incrementally by `apply-views`. |
 | `/tmp/voter_data.zip` | Downloaded NC voter zip file (reused across runs unless `--force` is given). |
 | `/tmp/voter_layout.txt` | Downloaded and augmented NC BOE layout file (used only when `--metadata` is given). |
-| `<dbname>` | Output SQLite database (defaults to `/tmp/voter_data.db`). |
+| `<db_dir>/voter_data.db` | Output SQLite database. Directory is `db_dir` from config, or `/tmp` if unset. Can be overridden by passing an explicit path on the command line. |
