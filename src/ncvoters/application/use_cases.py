@@ -23,9 +23,9 @@ LAYOUT_URL = "https://s3.amazonaws.com/dl.ncsbe.gov/data/layout_ncvoter.txt"
 ENTRY_NAME = "ncvoter_Statewide.txt"
 
 # Heuristic ratio for estimating voter count from uncompressed file size
-# (values from December 22, 2023 file — update periodically)
-_NUMER = 8_465_201
-_DENOM = 3_911_973_311
+# (values from March 22, 2026 file — update periodically)
+_NUMER = 9_099_826
+_DENOM = 4_258_425_549
 
 _WS = re.compile(r"\s+")
 
