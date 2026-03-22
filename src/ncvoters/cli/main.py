@@ -10,7 +10,8 @@ from ncvoters.adapters.config_loader import YamlConfigLoader
 from ncvoters.adapters.downloader import HttpFileDownloader
 from ncvoters.adapters.layout_fetcher import NcboeLayoutFetcher
 from ncvoters.adapters.sqlite_repo import SqliteVoterRepository
-from ncvoters.application.use_cases import AddMetadata, CreateVoterDatabase
+from ncvoters.application.add_metadata import AddMetadata
+from ncvoters.application.create_voter_database import CreateVoterDatabase
 
 _DEFAULT_ZIP = str(Path(tempfile.gettempdir()) / "voter_data.zip")
 

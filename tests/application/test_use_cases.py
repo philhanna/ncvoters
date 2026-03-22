@@ -5,7 +5,9 @@ import sqlite3
 import pytest
 
 from ncvoters.adapters.sqlite_repo import SqliteVoterRepository
-from ncvoters.application.use_cases import ApplyIndexes, ApplyViews, _rename_existing_db
+from ncvoters.application.apply_indexes import ApplyIndexes
+from ncvoters.application.apply_views import ApplyViews
+from ncvoters.application.create_voter_database import _rename_existing_db
 from ncvoters.domain.models import Configuration
 
 

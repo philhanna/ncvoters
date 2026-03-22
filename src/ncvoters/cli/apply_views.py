@@ -8,7 +8,7 @@ from pathlib import Path
 
 from ncvoters.adapters.config_loader import YamlConfigLoader
 from ncvoters.adapters.sqlite_repo import SqliteVoterRepository
-from ncvoters.application.use_cases import ApplyViews
+from ncvoters.application.apply_views import ApplyViews
 from ncvoters.cli.main import resolve_db_path
 
 _DEFAULT_VIEWS_DIR = Path.home() / ".config" / "ncvoters" / "views"

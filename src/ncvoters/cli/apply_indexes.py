@@ -8,7 +8,7 @@ from pathlib import Path
 
 from ncvoters.adapters.config_loader import YamlConfigLoader
 from ncvoters.adapters.sqlite_repo import SqliteVoterRepository
-from ncvoters.application.use_cases import ApplyIndexes
+from ncvoters.application.apply_indexes import ApplyIndexes
 from ncvoters.cli.main import resolve_db_path
 
 _DEFAULT_INDEXES_DIR = Path.home() / ".config" / "ncvoters" / "indexes"
