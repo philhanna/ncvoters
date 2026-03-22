@@ -3,6 +3,11 @@
 # selected_columns: columns to import from the voter file into the database.
 # sanitize_columns: subset of selected_columns where embedded whitespace is
 #                   collapsed to a single space and leading/trailing space trimmed.
+#
+# Views are stored as individual SQL files in ~/.config/ncvoters/views/.
+# Each file should contain a single CREATE VIEW <name> AS ... statement.
+# Views are applied automatically after every full build, and can also be
+# applied incrementally to an existing database with the apply-views command.
 
 selected_columns:
   - county_id

@@ -14,6 +14,7 @@ dependencies = [
 
 [project.scripts]
 get-voter-data = "ncvoters.cli.main:main"
+apply-views    = "ncvoters.cli.apply_views:main"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/ncvoters"]
