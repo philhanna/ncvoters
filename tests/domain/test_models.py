@@ -1,9 +1,10 @@
 from ncvoters.domain.models import Column, Configuration, Layout
 
 
-def test_configuration_defaults():
+def test_configuration():
     config = Configuration(selected_columns=["a", "b"], sanitize_columns=["a"])
-    assert config.tables == []
+    assert config.selected_columns == ["a", "b"]
+    assert config.sanitize_columns == ["a"]
 
 
 def test_layout_defaults():
