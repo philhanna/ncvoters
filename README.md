@@ -274,6 +274,49 @@ applied, skipped, or failed.
 ## Running the application
 <a id="running-the-application"></a>
 
+### Building the database
+
+```bash
+get-voter-data
+```
+
+This will:
+
+1. Download the NC voter zip file to `/tmp/voter_data.zip` (reused on
+   subsequent runs unless `--force` is given)
+2. Rename any existing database to `voter_data_YYYYMMDD_HHMMSS.db` in the
+   same directory
+3. Create a fresh `voter_data.db` with the columns listed in `config.yaml`
+4. Build indexes from `~/.config/ncvoters/indexes/`
+5. Apply views from `~/.config/ncvoters/views/`
+
+The database is written to `~/Desktop/voter_data.db` if `db_dir` is set in
+`config.yaml`, otherwise to `/tmp/voter_data.db`.
+
+**Options:**
+
+| Flag | Description |
+|---|---|
+| `get-voter-data [DBNAME]` | Write to a specific path instead of the configured default |
+| `-f`, `--force` | Re-download the zip file even if it already exists |
+| `-l N`, `--limit N` | Import only the first N voter records (useful for testing) |
+| `-m`, `--metadata` | Also add lookup tables for status, race, ethnicity, county, and reason codes |
+| `-q`, `--quiet` | Suppress all progress output |
+
+### Applying views and indexes incrementally
+
+If you add or edit a `.sql` file without wanting to rebuild the entire
+database, use the incremental commands:
+
+```bash
+apply-views
+apply-indexes
+```
+
+Both accept an optional `[DBNAME]` argument and a `-q`/`--quiet` flag.
+Unchanged definitions are skipped; changed ones are dropped and recreated.
+A summary is printed at the end.
+
 ## Viewing the database
 <a id="viewing-the-database"></a>
 I use [DB Browser for SQLite](https://sqlitebrowser.org/) to work with the database.
