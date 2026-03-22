@@ -21,6 +21,22 @@ def test_load_valid_config(tmp_path: Path) -> None:
     config = loader.load()
     assert config.selected_columns == ["last_name", "first_name"]
     assert config.sanitize_columns == ["last_name"]
+    assert config.db_dir is None
+
+
+def test_load_config_with_db_dir(tmp_path: Path) -> None:
+    cfg_file = tmp_path / "config.yaml"
+    cfg_file.write_text(
+        textwrap.dedent("""\
+            db_dir: ~/Desktop
+            selected_columns:
+              - last_name
+            sanitize_columns: []
+        """)
+    )
+    loader = YamlConfigLoader(path=cfg_file)
+    config = loader.load()
+    assert config.db_dir == "~/Desktop"
 
 
 def test_load_missing_file(tmp_path: Path) -> None:

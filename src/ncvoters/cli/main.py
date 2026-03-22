@@ -13,7 +13,6 @@ from ncvoters.adapters.sqlite_repo import SqliteVoterRepository
 from ncvoters.application.use_cases import AddMetadata, CreateVoterDatabase
 
 _DEFAULT_ZIP = str(Path(tempfile.gettempdir()) / "voter_data.zip")
-_DEFAULT_DB = str(Path(tempfile.gettempdir()) / "voter_data.db")
 
 _USAGE = """\
 usage: get-voter-data [OPTIONS] [DBNAME]
@@ -21,8 +20,9 @@ usage: get-voter-data [OPTIONS] [DBNAME]
 Creates a database of North Carolina voter registrations
 
 positional arguments:
-  dbname          Name of the SQLite database file to create
-                  (default: /tmp/voter_data.db)
+  dbname          Path to the SQLite database file to create.
+                  Overrides db_dir from config.yaml.
+                  Default: db_dir/voter_data.db from config, or /tmp/voter_data.db.
 
 options:
   -h, --help      Show this help text and exit
@@ -33,6 +33,15 @@ options:
 """
 
 
+def resolve_db_path(cli_arg: str | None, db_dir: str | None) -> str:
+    """Resolve the database path from CLI arg, config db_dir, or /tmp fallback."""
+    if cli_arg is not None:
+        return cli_arg
+    if db_dir:
+        return str(Path(db_dir).expanduser() / "voter_data.db")
+    return str(Path(tempfile.gettempdir()) / "voter_data.db")
+
+
 def _build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(add_help=False, usage=argparse.SUPPRESS)
     parser.add_argument("-h", "--help", action="store_true", default=False)
@@ -40,7 +49,7 @@ def _build_parser() -> argparse.ArgumentParser:
     parser.add_argument("-l", "--limit", type=int, default=0, metavar="N")
     parser.add_argument("-m", "--metadata", action="store_true", default=False)
     parser.add_argument("-q", "--quiet", action="store_true", default=False)
-    parser.add_argument("dbname", nargs="?", default=_DEFAULT_DB)
+    parser.add_argument("dbname", nargs="?", default=None)
     return parser
 
 
@@ -73,15 +82,16 @@ def main() -> None:
     # ---------------------------------------------------------------
     # Wire up secondary (outbound) adapters
     # ---------------------------------------------------------------
+    db_path = resolve_db_path(args.dbname, config.db_dir)
     downloader = HttpFileDownloader(quiet=args.quiet)
-    repo = SqliteVoterRepository(args.dbname, config)
+    repo = SqliteVoterRepository(db_path, config)
 
     # ---------------------------------------------------------------
     # Execute use cases
     # ---------------------------------------------------------------
     CreateVoterDatabase(config, downloader, repo, quiet=args.quiet).execute(
         zip_path=_DEFAULT_ZIP,
-        db_path=args.dbname,
+        db_path=db_path,
         force=args.force,
         max_entries=args.limit,
     )

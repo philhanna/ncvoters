@@ -5,6 +5,7 @@ from dataclasses import dataclass, field
 class Configuration:
     selected_columns: list[str]
     sanitize_columns: list[str]
+    db_dir: str | None = None
 
 
 @dataclass

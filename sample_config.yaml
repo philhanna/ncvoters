@@ -1,5 +1,13 @@
 # Copy this file to ~/.config/ncvoters/config.yaml and edit as needed.
 #
+# db_dir: directory where voter_data.db is created.
+#         Supports ~ expansion.  If omitted, /tmp is used.
+#         A positional argument on the command line overrides this.
+#         Any existing voter_data.db in this directory is renamed to
+#         voter_data_YYYYMMDD_HHMMSS.db before a new build starts.
+#
+#db_dir: ~/Desktop
+#
 # selected_columns: columns to import from the voter file into the database.
 # sanitize_columns: subset of selected_columns where embedded whitespace is
 #                   collapsed to a single space and leading/trailing space trimmed.

@@ -10,6 +10,7 @@ import logging
 import re
 import zipfile
 from dataclasses import dataclass, field
+from datetime import datetime
 from pathlib import Path
 from typing import Iterator
 
@@ -31,6 +32,18 @@ _NUMER = 9_099_826
 _DENOM = 4_258_425_549
 
 _WS = re.compile(r"\s+")
+
+
+def _rename_existing_db(db_path: str) -> None:
+    """Rename an existing database file to a timestamped backup in the same directory."""
+    p = Path(db_path)
+    if not p.exists():
+        return
+    stem = p.stem  # e.g. "voter_data"
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    backup = p.with_name(f"{stem}_{timestamp}{p.suffix}")
+    p.rename(backup)
+    log.info("Renamed existing database to %s", backup)
 
 
 def _estimate_voters(uncompressed_size: int) -> int:
@@ -87,12 +100,8 @@ class CreateVoterDatabase:
         else:
             self._downloader.download(ZIP_URL, zip_path)
 
-        # Remove existing database so we start fresh
-        db_file = Path(db_path)
-        if db_file.exists():
-            if not self._quiet:
-                log.info("Deleting existing database: %s", db_path)
-            db_file.unlink()
+        # Rename existing database so we start fresh
+        _rename_existing_db(db_path)
 
         if not self._quiet:
             log.info("Creating database...")

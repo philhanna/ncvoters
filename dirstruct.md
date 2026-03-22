@@ -22,7 +22,7 @@ ncvoters/
 | Entry | Purpose |
 |---|---|
 | [pyproject.toml](pyproject.toml) | Single source of truth for package metadata, dependencies, build backend (Hatchling), and pytest configuration. Declares the `get-voter-data` console script entry point. |
-| [sample_config.yaml](sample_config.yaml) | Template the user copies to `~/.config/ncvoters/config.yaml`. Documents the `selected_columns` and `sanitize_columns` keys. |
+| [sample_config.yaml](sample_config.yaml) | Template the user copies to `~/.config/ncvoters/config.yaml`. Documents the `db_dir`, `selected_columns`, and `sanitize_columns` keys. |
 | [dirstruct.md](dirstruct.md) | This file. |
 | [LICENSE](LICENSE) | Project licence. |
 | [README.md](README.md) | Project overview and usage instructions. |
@@ -199,7 +199,7 @@ go/
 
 | Path | Purpose |
 |---|---|
-| `~/.config/ncvoters/config.yaml` | User configuration (columns to import). |
+| `~/.config/ncvoters/config.yaml` | User configuration: `db_dir` (where `voter_data.db` is created), `selected_columns`, `sanitize_columns`. |
 | `~/.config/ncvoters/indexes/` | Directory of `.sql` index definitions, one file per index.  Applied automatically on every full build; also applied incrementally by `apply-indexes`. |
 | `~/.config/ncvoters/views/` | Directory of `.sql` view definitions, one file per view.  Applied automatically on every full build; also applied incrementally by `apply-views`. |
 | `/tmp/voter_data.zip` | Downloaded NC voter zip file (reused across runs unless `--force` is given). |

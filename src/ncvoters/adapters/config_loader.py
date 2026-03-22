@@ -26,4 +26,5 @@ class YamlConfigLoader(ConfigurationPort):
         return Configuration(
             selected_columns=data.get("selected_columns", []),
             sanitize_columns=data.get("sanitize_columns", []),
+            db_dir=data.get("db_dir", None),
         )

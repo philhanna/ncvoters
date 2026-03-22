@@ -1,11 +1,11 @@
-"""Tests for the ApplyIndexes and ApplyViews use cases."""
+"""Tests for the ApplyIndexes, ApplyViews, and rename-on-rebuild use cases."""
 
 import sqlite3
 
 import pytest
 
 from ncvoters.adapters.sqlite_repo import SqliteVoterRepository
-from ncvoters.application.use_cases import ApplyIndexes, ApplyViews
+from ncvoters.application.use_cases import ApplyIndexes, ApplyViews, _rename_existing_db
 from ncvoters.domain.models import Configuration
 
 
@@ -302,3 +302,36 @@ def test_apply_indexes_incremental_failure_does_not_abort(tmp_path) -> None:
 
     assert "good" in result.applied
     assert len(result.failed) == 1
+
+
+# ===========================================================================
+# _rename_existing_db tests
+# ===========================================================================
+
+def test_rename_existing_db_renames_file(tmp_path) -> None:
+    db = tmp_path / "voter_data.db"
+    db.write_bytes(b"dummy")
+
+    _rename_existing_db(str(db))
+
+    assert not db.exists()
+    backups = list(tmp_path.glob("voter_data_*.db"))
+    assert len(backups) == 1
+
+
+def test_rename_existing_db_backup_name_contains_timestamp(tmp_path) -> None:
+    db = tmp_path / "voter_data.db"
+    db.write_bytes(b"dummy")
+
+    _rename_existing_db(str(db))
+
+    backup = list(tmp_path.glob("voter_data_*.db"))[0]
+    # Name should be voter_data_YYYYMMDD_HHMMSS.db — 15 extra chars after stem
+    assert len(backup.stem) == len("voter_data_") + len("YYYYMMDD_HHMMSS")
+
+
+def test_rename_existing_db_noop_when_absent(tmp_path) -> None:
+    db = tmp_path / "voter_data.db"
+    # File does not exist — should not raise
+    _rename_existing_db(str(db))
+    assert list(tmp_path.glob("voter_data_*.db")) == []
