@@ -1,6 +1,6 @@
-# go-ncvoters
-[![Go Report Card](https://goreportcard.com/badge/github.com/philhanna/go-ncvoters)][idGoReportCard]
-[![PkgGoDev](https://pkg.go.dev/badge/github.com/philhanna/go-ncvoters)][idPkgGoDev]
+# ncvoters
+
+Creates an SQLite database from publicly available voter registration data in North Carolina
 
 ## Contents:
   - [Overview](#overview)
