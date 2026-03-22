@@ -131,6 +131,57 @@ See `selected_columns` in the sample configuration YAML file for a list of what
 I selected as the columns of interest.  You can change this by adding or
 deleting lines.
 
+## Installation
+<a id="installation"></a>
+
+### Prerequisites
+
+- Python 3.11 or later
+- `pip`
+
+### Steps
+
+1. **Clone the repository**
+
+   ```bash
+   git clone https://github.com/philhanna/ncvoters.git
+   cd ncvoters
+   ```
+
+2. **Install the package**
+
+   Installing in editable mode (`-e`) lets you pull future updates with
+   `git pull` without reinstalling:
+
+   ```bash
+   pip install -e .
+   ```
+
+   This registers three commands on your `PATH`:
+
+   | Command | Purpose |
+   |---|---|
+   | `get-voter-data` | Download the NC voter file and build the SQLite database |
+   | `apply-views` | Apply new or changed view definitions to an existing database |
+   | `apply-indexes` | Apply new or changed index definitions to an existing database |
+
+3. **Create the configuration directory**
+
+   ```bash
+   mkdir -p ~/.config/ncvoters
+   ```
+
+4. **Copy the sample configuration file**
+
+   ```bash
+   cp sample_config.yaml ~/.config/ncvoters/config.yaml
+   ```
+
+   Then edit `~/.config/ncvoters/config.yaml` as described in the
+   [Configuration](#configuration) section below.
+
+---
+
 ## Configuration
 <a id="configuration"></a>
 Create a subdirectory named `ncvoters` in your user configuration directory, which is:
