@@ -6,6 +6,10 @@ and the format is based on [Keep a Changelog].
 
 ## [Unreleased]
 
+## [1.0.0] - 2026-03-22
+
+First stable public release.
+
 ### Changed
 
 - Removed the original Go implementation; Python rewrite is now the only codebase
@@ -59,5 +63,6 @@ Initial Python release, converted from the original Go implementation.
 
 [Semantic Versioning]: https://semver.org/
 [Keep a Changelog]: https://keepachangelog.com/
-[Unreleased]: https://github.com/philhanna/ncvoters/compare/0.1.0..HEAD
-[0.1.0]: https://github.com/philhanna/ncvoters/commits/0.1.0
+[Unreleased]: https://github.com/philhanna/ncvoters/compare/v1.0.0..HEAD
+[1.0.0]: https://github.com/philhanna/ncvoters/compare/v0.1.0..v1.0.0
+[0.1.0]: https://github.com/philhanna/ncvoters/commits/v0.1.0
