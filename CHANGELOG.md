@@ -6,6 +6,18 @@ and the format is based on [Keep a Changelog].
 
 ## [Unreleased]
 
+### Changed
+
+- Removed the original Go implementation; Python rewrite is now the only codebase
+- Renamed plan documents and moved them into `docs/` directory
+- `dirstruct.md` updated to reflect removal of `go/`, addition of `docs/`
+  and `CHANGELOG.md`
+- README: added Installation section covering clone, `pip install -e .`,
+  and config directory setup
+- README: replaced stale Go-era "Additional tables" section with current
+  file-driven views and indexes documentation
+- README: filled in the previously empty "Running the application" section
+
 ## [0.1.0] - 2026-03-22
 
 Initial Python release, converted from the original Go implementation.
