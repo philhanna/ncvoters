@@ -6,7 +6,7 @@ build-backend = "hatchling.build"
 name = "ncvoters"
 version = "1.0.0"
 description = "Download and create an SQLite database of NC voter registrations"
-requires-python = ">=3.11"
+requires-python = ">=3.10"
 dependencies = [
     "pyyaml>=6.0",
     "requests>=2.31",
