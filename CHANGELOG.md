@@ -6,6 +6,16 @@ and the format is based on [Keep a Changelog].
 
 ## [Unreleased]
 
+## [2.0.0] - 2026-05-01
+
+### Changed
+
+- Replaced hexagonal-architecture Python package (`src/`, `tests/`) with six
+  standalone scripts driven by a `Makefile`: `download.py`, `unzip.py`,
+  `load.py`, `indexes.py`, `views.py`, `db_path.py`
+- Each pipeline step (download, unzip, load, indexes, views) is now a discrete
+  `make` target with file-based dependency tracking
+
 ## [1.1.0] - 2026-05-01
 
 ### Changed

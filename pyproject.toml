@@ -1,6 +1,6 @@
 [project]
 name = "ncvoters"
-version = "1.1.0"
+version = "2.0.0"
 description = "Download and create an SQLite database of NC voter registrations"
 requires-python = ">=3.10"
 dependencies = [
