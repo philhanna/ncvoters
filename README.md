@@ -138,6 +138,7 @@ deleting lines.
 
 - Python 3.11 or later
 - `pip`
+- GNU Make
 
 ### Steps
 
@@ -148,22 +149,11 @@ deleting lines.
    cd ncvoters
    ```
 
-2. **Install the package**
-
-   Installing in editable mode (`-e`) lets you pull future updates with
-   `git pull` without reinstalling:
+2. **Install dependencies**
 
    ```bash
    pip install -e .
    ```
-
-   This registers three commands on your `PATH`:
-
-   | Command | Purpose |
-   |---|---|
-   | `get-voter-data` | Download the NC voter file and build the SQLite database |
-   | `apply-views` | Apply new or changed view definitions to an existing database |
-   | `apply-indexes` | Apply new or changed index definitions to an existing database |
 
 3. **Create the configuration directory**
 
@@ -259,63 +249,51 @@ CREATE INDEX names ON voters (last_name, first_name, middle_name)
 ```
 
 Both views and indexes are applied automatically at the end of every full
-build.  To apply new or changed definitions to an existing database without
-rebuilding, use the incremental commands:
-
-```bash
-apply-views
-apply-indexes
-```
-
-Each command processes files independently — a syntax error in one file does
-not prevent the others from being applied — and prints a summary of what was
-applied, skipped, or failed.
+build. To re-apply definitions to an existing database without rebuilding,
+run `make views` or `make indexes` directly.
 
 ## Running the application
 <a id="running-the-application"></a>
 
 ### Building the database
 
+The build pipeline is driven by `make`. Running `make` from the repository
+root executes all stages in order, skipping any that are already up to date:
+
 ```bash
-get-voter-data
+make
 ```
 
-This will:
+The stages, in dependency order:
 
-1. Download the NC voter zip file to `/tmp/voter_data.zip` (reused on
-   subsequent runs unless `--force` is given)
-2. Rename any existing database to `voter_data_YYYYMMDD_HHMMSS.db` in the
-   same directory
-3. Create a fresh `voter_data.db` with the columns listed in `config.yaml`
-4. Build indexes from `~/.config/ncvoters/indexes/`
-5. Apply views from `~/.config/ncvoters/views/`
-
-The database is written to `~/Desktop/voter_data.db` if `db_dir` is set in
-`config.yaml`, otherwise to `/tmp/voter_data.db`.
-
-**Options:**
-
-| Flag | Description |
+| Target | What it does |
 |---|---|
-| `get-voter-data [DBNAME]` | Write to a specific path instead of the configured default |
-| `-f`, `--force` | Re-download the zip file even if it already exists |
-| `-l N`, `--limit N` | Import only the first N voter records (useful for testing) |
-| `-m`, `--metadata` | Also add lookup tables for status, race, ethnicity, county, and reason codes |
-| `-q`, `--quiet` | Suppress all progress output |
+| `make download` | Download `ncvoter_Statewide.zip` to `/tmp` (skipped if already present) |
+| `make unzip` | Extract the voter txt file from the zip |
+| `make load` | Load selected columns into a fresh `voter_data.db` |
+| `make indexes` | Apply all `.sql` files from `~/.config/ncvoters/indexes/` |
+| `make views` | Apply all `.sql` files from `~/.config/ncvoters/views/` |
+| `make clean` | Remove downloaded files and build stamps |
+
+`make all` and plain `make` both run the full pipeline through the `views`
+stage. You can also invoke any individual target to run only that stage and
+its prerequisites.
+
+The database is written to `<db_dir>/voter_data.db` if `db_dir` is set in
+`config.yaml`, otherwise to `/tmp/voter_data.db`.
 
 ### Applying views and indexes incrementally
 
-If you add or edit a `.sql` file without wanting to rebuild the entire
-database, use the incremental commands:
+To re-apply definitions to an existing database without rebuilding from
+scratch, run only the relevant target:
 
 ```bash
-apply-views
-apply-indexes
+make views
+make indexes
 ```
 
-Both accept an optional `[DBNAME]` argument and a `-q`/`--quiet` flag.
-Unchanged definitions are skipped; changed ones are dropped and recreated.
-A summary is printed at the end.
+Each target drops and recreates every definition found in its config
+subdirectory, then prints a summary of what was applied.
 
 ## Viewing the database
 <a id="viewing-the-database"></a>
