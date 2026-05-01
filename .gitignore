@@ -11,5 +11,4 @@ dist/
 *.egg-info/
 .coverage
 .codex
-.views*
-.indexes*
+*.stamp
