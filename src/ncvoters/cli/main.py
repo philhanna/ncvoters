@@ -58,6 +58,7 @@ def main() -> None:
     logging.basicConfig(
         level=logging.INFO,
         format="%(asctime)s %(filename)s:%(lineno)d %(message)s",
+        datefmt="%H:%M:%S",
         stream=sys.stderr,
     )
 
