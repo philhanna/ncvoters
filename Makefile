@@ -1,6 +1,8 @@
 ZIP  := /tmp/voter_data.zip
 TXT  := /tmp/ncvoter_Statewide.txt
-DB   := $(shell python3 scripts/db_path.py)
+DB   := $(shell python scripts/db_path.py)
+INDEX_SQL := $(wildcard $(HOME)/.config/ncvoters/indexes/*.sql)
+VIEW_SQL  := $(wildcard $(HOME)/.config/ncvoters/views/*.sql)
 
 .PHONY: all download unzip load indexes views clean
 
@@ -9,36 +11,37 @@ all: views
 # ── download ─────────────────────────────────────────────────────────────────
 
 $(ZIP):
-	python3 scripts/download.py $(ZIP)
+	python scripts/download.py $(ZIP)
 
 download: $(ZIP)
 
 # ── unzip ────────────────────────────────────────────────────────────────────
 
 $(TXT): $(ZIP)
-	python3 scripts/unzip.py $(ZIP) $(TXT)
+	python scripts/unzip.py $(ZIP) $(TXT)
 
 unzip: $(TXT)
 
 # ── load ─────────────────────────────────────────────────────────────────────
 
-$(DB): $(TXT)
-	python3 scripts/load.py $(TXT) "$(DB)"
+.load.stamp: $(TXT)
+	python scripts/load.py $(TXT) "$(DB)"
+	touch .load.stamp
 
-load: $(DB)
+load: .load.stamp
 
 # ── indexes ──────────────────────────────────────────────────────────────────
 
-.indexes.stamp: $(DB)
-	python3 scripts/indexes.py "$(DB)"
+.indexes.stamp: .load.stamp $(INDEX_SQL) | $(DB)
+	python scripts/indexes.py "$(DB)"
 	touch .indexes.stamp
 
 indexes: .indexes.stamp
 
 # ── views ────────────────────────────────────────────────────────────────────
 
-.views.stamp: .indexes.stamp
-	python3 scripts/views.py "$(DB)"
+.views.stamp: .indexes.stamp $(VIEW_SQL) | $(DB)
+	python scripts/views.py "$(DB)"
 	touch .views.stamp
 
 views: .views.stamp
@@ -46,4 +49,4 @@ views: .views.stamp
 # ── clean ────────────────────────────────────────────────────────────────────
 
 clean:
-	rm -f $(ZIP) $(TXT) "$(DB)" .indexes.stamp .views.stamp
+	rm -f $(ZIP) $(TXT) "$(DB)" .load.stamp .indexes.stamp .views.stamp
