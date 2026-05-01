@@ -5,18 +5,37 @@ import sys
 import zipfile
 from pathlib import Path
 
+# The single entry inside the zip that contains all voter records.
+
 ENTRY_NAME = "ncvoter_Statewide.txt"
 DEFAULT_ZIP = "/tmp/voter_data.zip"
 DEFAULT_DEST = "/tmp/ncvoter_Statewide.txt"
+
+# Streaming chunk size. Keeps memory usage flat even though the uncompressed
+# file exceeds 1 GB.
+
 CHUNK = 1 << 20  # 1 MB
 
 
 def unzip(zip_path: str, dest_path: str) -> None:
+    """Extract the statewide voter txt file from the NC SBE zip archive.
+
+    Streams the extraction in CHUNK-sized blocks to keep memory usage constant
+    regardless of the uncompressed file size. Prints a percentage progress
+    indicator to stderr and reports the final size in gigabytes when done.
+
+    Args:
+        zip_path: Path to the source zip file.
+        dest_path: Path where the extracted txt file will be written.
+    """
     print(f"Extracting {ENTRY_NAME}", file=sys.stderr)
     print(f"      from {zip_path}", file=sys.stderr)
     print(f"        to {dest_path}", file=sys.stderr)
 
     with zipfile.ZipFile(zip_path) as zf:
+        # Read the stored uncompressed size upfront to show a real percentage
+        # rather than a raw byte count.
+
         info = zf.getinfo(ENTRY_NAME)
         total = info.file_size
         written = 0
@@ -28,6 +47,8 @@ def unzip(zip_path: str, dest_path: str) -> None:
                 if total > 0:
                     pct = written * 100 // total
                     print(f"\r  {pct}%", end="", file=sys.stderr, flush=True)
+
+    # Move past the in-place progress line before reporting the final size.
 
     print(file=sys.stderr)
     size_gb = Path(dest_path).stat().st_size / (1024 ** 3)
