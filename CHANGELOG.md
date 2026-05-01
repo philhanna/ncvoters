@@ -6,6 +6,17 @@ and the format is based on [Keep a Changelog].
 
 ## [Unreleased]
 
+## [2.1.1] - 2026-05-01
+
+### Added
+
+- `get-voter-data` shell script — thin wrapper around `make` that always runs
+  from the project directory
+
+### Changed
+
+- Do not delete the old database on a fresh build
+
 ## [2.1.0] - 2026-05-01
 
 ### Changed
