@@ -49,4 +49,4 @@ views: .views.stamp
 # ── clean ────────────────────────────────────────────────────────────────────
 
 clean:
-	rm -f $(ZIP) $(TXT) "$(DB)" .load.stamp .indexes.stamp .views.stamp
+	rm -f $(ZIP) $(TXT) .load.stamp .indexes.stamp .views.stamp
