@@ -6,6 +6,13 @@ and the format is based on [Keep a Changelog].
 
 ## [Unreleased]
 
+## [2.1.0] - 2026-05-01
+
+### Changed
+
+- Improved Makefile stamp handling: ignore all stamp files and local Codex
+  metadata; fix dependency stamp tracking
+
 ## [2.0.0] - 2026-05-01
 
 ### Changed
