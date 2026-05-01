@@ -17,7 +17,6 @@ ncvoters/
 ├── pyproject.toml
 ├── README.md
 ├── sample_config.yaml
-├── docs/
 └── scripts/
 ```
 
@@ -31,7 +30,6 @@ ncvoters/
 | [pyproject.toml](pyproject.toml) | Package metadata and the single runtime dependency (`pyyaml`). |
 | [README.md](README.md) | Project overview, installation steps, and usage instructions. |
 | [sample_config.yaml](sample_config.yaml) | Template the user copies to `~/.config/ncvoters/config.yaml`. Documents the `db_dir`, `selected_columns`, and `sanitize_columns` keys. |
-| [docs/](docs/) | Planning documents (`mplan.md`, `iplan.md`, `dplan.md`). |
 | [scripts/](scripts/) | Individual Python scripts, one per pipeline stage. |
 
 ---
