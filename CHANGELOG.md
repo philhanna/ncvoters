@@ -6,6 +6,22 @@ and the format is based on [Keep a Changelog].
 
 ## [Unreleased]
 
+## [2.2.0] - 2026-05-04
+
+### Added
+
+- Metadata pipeline stage, layout parser, and metadata tables implementation
+
+### Changed
+
+- Added comments and docstrings to all scripts
+- Rewrote `dirstruct.md` to reflect scripts + Makefile structure
+- Updated README installation and run instructions for Makefile pipeline
+
+### Removed
+
+- Removed old docs
+
 ## [2.1.1] - 2026-05-01
 
 ### Added
