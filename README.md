@@ -275,33 +275,32 @@ The stages, in dependency order:
 | `make download` | Download `ncvoter_Statewide.zip` to `/tmp` (skipped if already present) |
 | `make unzip` | Extract the voter txt file from the zip |
 | `make load` | Load selected columns into a fresh `voter_data.db` |
-| `make metadata` | Create or refresh metadata lookup tables in the existing database |
-| `make indexes` | Apply all `.sql` files from `~/.config/ncvoters/indexes/` |
-| `make views` | Apply all `.sql` files from `~/.config/ncvoters/views/` |
+| `make metadata` | Create or refresh metadata lookup tables after loading voter data |
+| `make indexes` | Apply all `.sql` files from `~/.config/ncvoters/indexes/` to the existing database |
+| `make views` | Apply all `.sql` files from `~/.config/ncvoters/views/` to the existing database |
 | `make clean` | Remove downloaded files and build stamps |
 
 `make all` and plain `make` both run the full pipeline through the `views`
-stage. You can also invoke any individual target to run only that stage and
-its prerequisites.
+stage: download, unzip, load, metadata, indexes, then views. You can also
+invoke any individual target directly.
 
 The database is written to `<db_dir>/voter_data.db` if `db_dir` is set in
 `config.yaml`, otherwise to `/tmp/voter_data.db`.
 
-### Applying metadata, views, and indexes incrementally
+### Applying views and indexes incrementally
 
 To re-apply definitions to an existing database without rebuilding from
 scratch, run only the relevant target:
 
 ```bash
-make metadata
 make views
 make indexes
 ```
 
-`make metadata` drops and recreates the built-in lookup tables from the NC
-layout file. `make views` and `make indexes` each drop and recreate every
-definition found in their config subdirectory, then print a summary of what
-was applied.
+`make views` and `make indexes` each drop and recreate every definition found
+in their config subdirectory, then print a summary of what was applied.
+
+`make metadata` remains part of the full build pipeline after `make load`.
 
 ## Viewing the database
 <a id="viewing-the-database"></a>

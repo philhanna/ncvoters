@@ -6,7 +6,7 @@ VIEW_SQL  := $(wildcard $(HOME)/.config/ncvoters/views/*.sql)
 
 .PHONY: all download unzip load metadata indexes views clean
 
-all: views
+all: .views.stamp
 
 # ── download ─────────────────────────────────────────────────────────────────
 
@@ -32,7 +32,7 @@ load: .load.stamp
 
 # ── metadata ─────────────────────────────────────────────────────────────────
 
-.metadata.stamp: | $(DB)
+.metadata.stamp: .load.stamp | $(DB)
 	python scripts/metadata.py "$(DB)"
 	touch .metadata.stamp
 
@@ -40,11 +40,13 @@ metadata: .metadata.stamp
 
 # ── indexes ──────────────────────────────────────────────────────────────────
 
-.indexes.stamp: .metadata.stamp $(INDEX_SQL) | $(DB)
+.indexes.stamp: .load.stamp .metadata.stamp $(INDEX_SQL) | $(DB)
 	python scripts/indexes.py "$(DB)"
 	touch .indexes.stamp
 
-indexes: .indexes.stamp
+indexes: | $(DB)
+	python scripts/indexes.py "$(DB)"
+	touch .indexes.stamp
 
 # ── views ────────────────────────────────────────────────────────────────────
 
@@ -52,7 +54,9 @@ indexes: .indexes.stamp
 	python scripts/views.py "$(DB)"
 	touch .views.stamp
 
-views: .views.stamp
+views: | $(DB)
+	python scripts/views.py "$(DB)"
+	touch .views.stamp
 
 # ── clean ────────────────────────────────────────────────────────────────────
 
