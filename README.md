@@ -191,7 +191,7 @@ selected_columns:
 ```
 This is where you specify the subset of the available columns described above that you
 want to be included in your local copy of the database.  Note that you need to indent
-each line in the list by two spaces (or a tab character)
+each line in the list by two spaces.
 
 ```yaml
 sanitize_columns:
