@@ -4,7 +4,7 @@ DB   := $(shell python scripts/db_path.py)
 INDEX_SQL := $(wildcard $(HOME)/.config/ncvoters/indexes/*.sql)
 VIEW_SQL  := $(wildcard $(HOME)/.config/ncvoters/views/*.sql)
 
-.PHONY: all download unzip load indexes views clean
+.PHONY: all download unzip load metadata indexes views clean
 
 all: views
 
@@ -30,9 +30,16 @@ unzip: $(TXT)
 
 load: .load.stamp
 
+# ── metadata ─────────────────────────────────────────────────────────────────
+
+.metadata.stamp: .load.stamp | $(DB)
+	touch .metadata.stamp
+
+metadata: .metadata.stamp
+
 # ── indexes ──────────────────────────────────────────────────────────────────
 
-.indexes.stamp: .load.stamp $(INDEX_SQL) | $(DB)
+.indexes.stamp: .metadata.stamp $(INDEX_SQL) | $(DB)
 	python scripts/indexes.py "$(DB)"
 	touch .indexes.stamp
 
@@ -49,4 +56,4 @@ views: .views.stamp
 # ── clean ────────────────────────────────────────────────────────────────────
 
 clean:
-	rm -f $(ZIP) $(TXT) .load.stamp .indexes.stamp .views.stamp
+	rm -f $(ZIP) $(TXT) .load.stamp .metadata.stamp .indexes.stamp .views.stamp

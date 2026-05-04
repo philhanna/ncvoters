@@ -271,6 +271,7 @@ The stages, in dependency order:
 | `make download` | Download `ncvoter_Statewide.zip` to `/tmp` (skipped if already present) |
 | `make unzip` | Extract the voter txt file from the zip |
 | `make load` | Load selected columns into a fresh `voter_data.db` |
+| `make metadata` | Run the metadata stage after loading and before indexes |
 | `make indexes` | Apply all `.sql` files from `~/.config/ncvoters/indexes/` |
 | `make views` | Apply all `.sql` files from `~/.config/ncvoters/views/` |
 | `make clean` | Remove downloaded files and build stamps |
@@ -278,6 +279,9 @@ The stages, in dependency order:
 `make all` and plain `make` both run the full pipeline through the `views`
 stage. You can also invoke any individual target to run only that stage and
 its prerequisites.
+
+At the moment, `make metadata` is a placeholder stage in the pipeline so code
+can be added later without changing the build order again.
 
 The database is written to `<db_dir>/voter_data.db` if `db_dir` is set in
 `config.yaml`, otherwise to `/tmp/voter_data.db`.
