@@ -9,6 +9,8 @@ VIEW_SQL  := $(wildcard $(HOME)/.config/ncvoters/views/*.sql)
 
 help:
 	@printf '%s\n' \
+		'get-voter-data' \
+		'' \
 		'Builds an SQLite database from North Carolina voter registration data.' \
 		'Default target: help' \
 		'' \
