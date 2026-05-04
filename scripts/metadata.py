@@ -13,10 +13,18 @@ in the database by the names of the four tables above.
 """
 
 import re
+import sqlite3
+import sys
+import tempfile
 import requests
 from typing import Dict, List, Optional, Any
 from dataclasses import dataclass
 from datetime import datetime
+from pathlib import Path
+
+import yaml
+
+CONFIG_PATH = Path.home() / ".config" / "ncvoters" / "config.yaml"
 
 @dataclass
 class ColumnDefinition:
@@ -356,6 +364,99 @@ class LayoutParser:
             county_mapping[county_id] = county_name
         
         return county_mapping
+
+    def _get_code_table(self, parsed_data: Dict[str, Any], table_name: str) -> CodeTable:
+        """Return a named code table from parsed data."""
+        for table in parsed_data["code_tables"]:
+            if table.name == table_name:
+                return table
+        raise ValueError(f"Code table not found: {table_name}")
+
+    def _recreate_lookup_table(
+        self,
+        conn: sqlite3.Connection,
+        table_name: str,
+        key_column: str,
+        value_column: str,
+        rows: List[tuple[Any, Any]],
+    ) -> None:
+        """Drop, recreate, and repopulate a two-column lookup table."""
+        conn.execute(f"DROP TABLE IF EXISTS {table_name}")
+        conn.execute(
+            f"""
+            CREATE TABLE {table_name} (
+                {key_column} TEXT PRIMARY KEY,
+                {value_column} TEXT NOT NULL
+            )
+            """
+        )
+        conn.executemany(
+            f"INSERT INTO {table_name} ({key_column}, {value_column}) VALUES (?, ?)",
+            rows,
+        )
+        conn.commit()
+        print(f"  {table_name} - {len(rows)} rows", file=sys.stderr)
+
+    def create_status_codes_table(
+        self, conn: sqlite3.Connection, parsed_data: Dict[str, Any]
+    ) -> None:
+        """Create and populate the status_codes lookup table."""
+        table = self._get_code_table(parsed_data, "status_codes")
+        rows = sorted(table.codes.items())
+        self._recreate_lookup_table(
+            conn, "status_codes", "status_cd", "status_name", rows
+        )
+
+    def create_race_codes_table(
+        self, conn: sqlite3.Connection, parsed_data: Dict[str, Any]
+    ) -> None:
+        """Create and populate the race_codes lookup table."""
+        table = self._get_code_table(parsed_data, "race_codes")
+        rows = sorted(table.codes.items())
+        self._recreate_lookup_table(conn, "race_codes", "race_code", "race_name", rows)
+
+    def create_ethnic_codes_table(
+        self, conn: sqlite3.Connection, parsed_data: Dict[str, Any]
+    ) -> None:
+        """Create and populate the ethnic_codes lookup table."""
+        table = self._get_code_table(parsed_data, "ethnic_codes")
+        rows = sorted(table.codes.items())
+        self._recreate_lookup_table(
+            conn, "ethnic_codes", "ethnic_code", "ethnic_name", rows
+        )
+
+    def create_county_mapping_table(
+        self, conn: sqlite3.Connection, parsed_data: Dict[str, Any]
+    ) -> None:
+        """Create and populate the county_mapping lookup table."""
+        conn.execute("DROP TABLE IF EXISTS county_mapping")
+        conn.execute(
+            """
+            CREATE TABLE county_mapping (
+                county_id INTEGER PRIMARY KEY,
+                county_name TEXT NOT NULL
+            )
+            """
+        )
+        rows = sorted(parsed_data["county_mapping"].items())
+        conn.executemany(
+            "INSERT INTO county_mapping (county_id, county_name) VALUES (?, ?)", rows
+        )
+        conn.commit()
+        print(f"  county_mapping - {len(rows)} rows", file=sys.stderr)
+
+    def apply_metadata_tables(self, db_path: str, parsed_data: Dict[str, Any]) -> None:
+        """Create all metadata lookup tables in the target database."""
+        print(f"Applying metadata tables to {db_path}", file=sys.stderr)
+        conn = sqlite3.connect(db_path)
+        try:
+            self.create_status_codes_table(conn, parsed_data)
+            self.create_race_codes_table(conn, parsed_data)
+            self.create_ethnic_codes_table(conn, parsed_data)
+            self.create_county_mapping_table(conn, parsed_data)
+        finally:
+            conn.close()
+        print("Done.", file=sys.stderr)
     
     def get_column_names(self, version: str = "current") -> List[str]:
         """Get list of column names for a specific version"""
@@ -483,55 +584,30 @@ class LayoutParser:
         return json_str
 
 
-# Example usage
-if __name__ == '__main__':
-    parser = LayoutParser()
-    
+def resolve_db_path(cli_arg: str | None) -> str:
+    """Return the path to voter_data.db, in priority order."""
+    if cli_arg:
+        return cli_arg
     try:
-        # Parse directly from the URL
-        print("Fetching and parsing layout from NCSBE website...\n")
-        result = parser.parse_from_url()  # Uses DEFAULT_URL
-        
-        # Print summary
-        parser.print_summary(result)
-        
-        # Export to JSON for further processing
-        parser.export_json(result, "nc_voter_layout.json")
-        
-        # Demonstrate specific queries
-        print("\n\n🔍 SPECIFIC QUERIES:")
-        
-        # Find columns with 'name' in them
-        current_cols = result['columns']['current']
-        name_columns = [col.name for col in current_cols if 'name' in col.name.lower()]
-        print(f"\nColumns containing 'name': {name_columns[:15]}...")
-        
-        # Get all status codes
-        status_table = None
-        for table in result['code_tables']:
-            if table.name == 'status_codes':
-                status_table = table
-                break
-        
-        if status_table:
-            print(f"\nStatus codes: {status_table.codes}")
-        
-        # Find county ID for Wake County
-        wake_id = None
-        for county_id, name in result['county_mapping'].items():
-            if name == 'WAKE':
-                wake_id = county_id
-                break
-        
-        if wake_id:
-            print(f"\nWake County ID: {wake_id}")
-        
-        # Get last update date
-        print(f"\nLast updated: {result['metadata'].get('updated', 'Unknown')}")
-        
-    except Exception as e:
-        print(f"Error: {e}")
-        print("\nTroubleshooting tips:")
-        print("1. Check your internet connection")
-        print("2. Verify the URL is accessible: https://s3.amazonaws.com/dl.ncsbe.gov/data/layout_ncvoter.txt")
-        print("3. Install requests library if not present: pip install requests")
+        with open(CONFIG_PATH, encoding="utf-8") as f:
+            config = yaml.safe_load(f)
+        db_dir = config.get("db_dir")
+        if db_dir:
+            return str(Path(db_dir).expanduser() / "voter_data.db")
+    except FileNotFoundError:
+        pass
+    return str(Path(tempfile.gettempdir()) / "voter_data.db")
+
+
+def main() -> None:
+    """Fetch the NC layout file and load lookup tables into SQLite."""
+    db_path = resolve_db_path(sys.argv[1] if len(sys.argv) > 1 else None)
+    url = sys.argv[2] if len(sys.argv) > 2 else None
+
+    parser = LayoutParser()
+    parsed_data = parser.parse_from_url(url)
+    parser.apply_metadata_tables(db_path, parsed_data)
+
+
+if __name__ == "__main__":
+    main()

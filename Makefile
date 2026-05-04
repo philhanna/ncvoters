@@ -32,7 +32,8 @@ load: .load.stamp
 
 # ── metadata ─────────────────────────────────────────────────────────────────
 
-.metadata.stamp: .load.stamp | $(DB)
+.metadata.stamp: | $(DB)
+	python scripts/metadata.py "$(DB)"
 	touch .metadata.stamp
 
 metadata: .metadata.stamp

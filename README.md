@@ -7,9 +7,13 @@ Creates an SQLite database from publicly available voter registration data in No
     - [File layout](#file-layout)
     - [Choosing the columns](#choosing-the-columns)
   - [Installation](#installation)
+    - [Prerequisites](#prerequisites)
+    - [Steps](#steps)
   - [Configuration](#configuration)
-    - [Additional tables](#additional-tables)
+    - [Views and indexes](#views-and-indexes)
   - [Running the application](#running-the-application)
+    - [Building the database](#building-the-database)
+    - [Applying metadata, views, and indexes incrementally](#applying-metadata-views-and-indexes-incrementally)
   - [Viewing the database](#viewing-the-database)
   - [References](#references)
 
@@ -271,7 +275,7 @@ The stages, in dependency order:
 | `make download` | Download `ncvoter_Statewide.zip` to `/tmp` (skipped if already present) |
 | `make unzip` | Extract the voter txt file from the zip |
 | `make load` | Load selected columns into a fresh `voter_data.db` |
-| `make metadata` | Run the metadata stage after loading and before indexes |
+| `make metadata` | Create or refresh metadata lookup tables in the existing database |
 | `make indexes` | Apply all `.sql` files from `~/.config/ncvoters/indexes/` |
 | `make views` | Apply all `.sql` files from `~/.config/ncvoters/views/` |
 | `make clean` | Remove downloaded files and build stamps |
@@ -280,24 +284,24 @@ The stages, in dependency order:
 stage. You can also invoke any individual target to run only that stage and
 its prerequisites.
 
-At the moment, `make metadata` is a placeholder stage in the pipeline so code
-can be added later without changing the build order again.
-
 The database is written to `<db_dir>/voter_data.db` if `db_dir` is set in
 `config.yaml`, otherwise to `/tmp/voter_data.db`.
 
-### Applying views and indexes incrementally
+### Applying metadata, views, and indexes incrementally
 
 To re-apply definitions to an existing database without rebuilding from
 scratch, run only the relevant target:
 
 ```bash
+make metadata
 make views
 make indexes
 ```
 
-Each target drops and recreates every definition found in its config
-subdirectory, then prints a summary of what was applied.
+`make metadata` drops and recreates the built-in lookup tables from the NC
+layout file. `make views` and `make indexes` each drop and recreate every
+definition found in their config subdirectory, then print a summary of what
+was applied.
 
 ## Viewing the database
 <a id="viewing-the-database"></a>
