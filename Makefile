@@ -1,10 +1,39 @@
 ZIP  := /tmp/voter_data.zip
 TXT  := /tmp/ncvoter_Statewide.txt
-DB   := $(shell python scripts/db_path.py)
 INDEX_SQL := $(wildcard $(HOME)/.config/ncvoters/indexes/*.sql)
 VIEW_SQL  := $(wildcard $(HOME)/.config/ncvoters/views/*.sql)
 
-.PHONY: all download unzip load metadata indexes views clean
+.PHONY: help all download unzip load metadata indexes views clean
+
+# ── help ─────────────────────────────────────────────────────────────────────
+
+help:
+	@printf '%s\n' \
+		'ncvoters' \
+		'' \
+		'Builds an SQLite database from North Carolina voter registration data.' \
+		'Default target: help' \
+		'' \
+		'Usage:' \
+		'  make [target]' \
+		'' \
+		'Available targets:' \
+		'  help      Show this help text.' \
+		'  all       Run the full pipeline: download, unzip, load, metadata, indexes, views.' \
+		'  download  Download the statewide zip file to /tmp.' \
+		'  unzip     Extract the voter data text file from the zip.' \
+		'  load      Load selected columns into the SQLite database.' \
+		'  metadata  Refresh built-in metadata lookup tables after load.' \
+		'  indexes   Apply user-defined indexes to the existing database.' \
+		'  views     Apply user-defined views to the existing database.' \
+		'  clean     Remove downloaded files and local build stamps.' \
+		'' \
+		'Examples:' \
+		'  make help' \
+		'  make all' \
+		'  make clean' \
+		'  make indexes' \
+		'  make views'
 
 all: .views.stamp
 
@@ -25,37 +54,37 @@ unzip: $(TXT)
 # ── load ─────────────────────────────────────────────────────────────────────
 
 .load.stamp: $(TXT)
-	python scripts/load.py $(TXT) "$(DB)"
+	python scripts/load.py $(TXT)
 	touch .load.stamp
 
 load: .load.stamp
 
 # ── metadata ─────────────────────────────────────────────────────────────────
 
-.metadata.stamp: .load.stamp | $(DB)
-	python scripts/metadata.py "$(DB)"
+.metadata.stamp: .load.stamp
+	python scripts/metadata.py
 	touch .metadata.stamp
 
 metadata: .metadata.stamp
 
 # ── indexes ──────────────────────────────────────────────────────────────────
 
-.indexes.stamp: .load.stamp .metadata.stamp $(INDEX_SQL) | $(DB)
-	python scripts/indexes.py "$(DB)"
+.indexes.stamp: .load.stamp .metadata.stamp $(INDEX_SQL)
+	python scripts/indexes.py
 	touch .indexes.stamp
 
-indexes: | $(DB)
-	python scripts/indexes.py "$(DB)"
+indexes:
+	python scripts/indexes.py
 	touch .indexes.stamp
 
 # ── views ────────────────────────────────────────────────────────────────────
 
-.views.stamp: .indexes.stamp $(VIEW_SQL) | $(DB)
-	python scripts/views.py "$(DB)"
+.views.stamp: .indexes.stamp $(VIEW_SQL)
+	python scripts/views.py
 	touch .views.stamp
 
-views: | $(DB)
-	python scripts/views.py "$(DB)"
+views:
+	python scripts/views.py
 	touch .views.stamp
 
 # ── clean ────────────────────────────────────────────────────────────────────

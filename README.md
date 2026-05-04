@@ -261,11 +261,12 @@ run `make views` or `make indexes` directly.
 
 ### Building the database
 
-The build pipeline is driven by `make`. Running `make` from the repository
-root executes all stages in order, skipping any that are already up to date:
+The build pipeline is driven by `make`. Running `make` with no target shows
+the built-in help. Run `make all` from the repository root to execute all
+stages in order, skipping any that are already up to date:
 
 ```bash
-make
+make all
 ```
 
 The stages, in dependency order:
@@ -280,9 +281,9 @@ The stages, in dependency order:
 | `make views` | Apply all `.sql` files from `~/.config/ncvoters/views/` to the existing database |
 | `make clean` | Remove downloaded files and build stamps |
 
-`make all` and plain `make` both run the full pipeline through the `views`
-stage: download, unzip, load, metadata, indexes, then views. You can also
-invoke any individual target directly.
+`make all` runs the full pipeline through the `views` stage: download, unzip,
+load, metadata, indexes, then views. You can also invoke any individual
+target directly.
 
 The database is written to `<db_dir>/voter_data.db` if `db_dir` is set in
 `config.yaml`, otherwise to `/tmp/voter_data.db`.
