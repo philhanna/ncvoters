@@ -9,13 +9,11 @@ VIEW_SQL  := $(wildcard $(HOME)/.config/ncvoters/views/*.sql)
 
 help:
 	@printf '%s\n' \
-		'ncvoters' \
-		'' \
 		'Builds an SQLite database from North Carolina voter registration data.' \
 		'Default target: help' \
 		'' \
 		'Usage:' \
-		'  make [target]' \
+		'  get-voter-data [target]' \
 		'' \
 		'Available targets:' \
 		'  help      Show this help text.' \
@@ -29,11 +27,11 @@ help:
 		'  clean     Remove downloaded files and local build stamps.' \
 		'' \
 		'Examples:' \
-		'  make help' \
-		'  make all' \
-		'  make clean' \
-		'  make indexes' \
-		'  make views'
+		'  get-voter-data help' \
+		'  get-voter-data all' \
+		'  get-voter-data clean' \
+		'  get-voter-data indexes' \
+		'  get-voter-data views'
 
 all: .views.stamp
 
