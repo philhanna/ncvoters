@@ -4,9 +4,26 @@
 import csv
 import os
 import sqlite3
+from pathlib import Path
 
 DEFAULT_TABLE_NAME = "voters"
 DEFAULT_BATCH_SIZE = 10_000
+
+
+def default_views_dir():
+    """Return the per-user views directory for the current platform."""
+    if os.name == "nt":
+        config_root = Path(os.environ.get("APPDATA", Path.home() / "AppData/Roaming"))
+    elif os.environ.get("XDG_CONFIG_HOME"):
+        config_root = Path(os.environ["XDG_CONFIG_HOME"])
+    elif os.sys.platform == "darwin":
+        config_root = Path.home() / "Library/Application Support"
+    else:
+        config_root = Path.home() / ".config"
+    return config_root / "ncvoters" / "views"
+
+
+DEFAULT_VIEWS_DIR = default_views_dir()
 
 
 def create_sqlite_from_csv(
@@ -51,4 +68,27 @@ def create_sqlite_from_csv(
                     batch,
                 )
 
+        create_indexes(connection, table_name)
+        create_views(connection)
         connection.commit()
+
+
+def create_indexes(connection, table_name):
+    """Create the indexes used by common voter lookups."""
+    connection.execute(
+        f'CREATE INDEX "addresses" ON "{table_name}" ("address")'
+    )
+    connection.execute(
+        f'CREATE INDEX "names" ON "{table_name}" '
+        '("last_name", "first_name", "middle_name")'
+    )
+
+
+def create_views(connection, views_dir=DEFAULT_VIEWS_DIR):
+    """Apply each SQL file from the configured views directory."""
+    views_path = Path(views_dir).expanduser()
+    if not views_path.is_dir():
+        return
+
+    for sql_path in sorted(views_path.glob("*.sql")):
+        connection.executescript(sql_path.read_text(encoding="utf-8"))

@@ -20,7 +20,7 @@ from ncvoters.application import create_voter_csv
 URL = "https://s3.amazonaws.com/dl.ncsbe.gov/data/ncvoter_Statewide.zip"
 
 # Default SQLite output path.
-OUTPUT_DB = "nc_voters.sqlite3"
+OUTPUT_DB = "nc_voters.db"
 
 # Number of records to process per chunk.
 DEFAULT_CHUNKSIZE = 100000
@@ -41,9 +41,7 @@ def main(argv=None):
     finally:
         if os.path.exists(intermediate_csv):
             os.remove(intermediate_csv)
-    print(
-        f"Done. {total_rows} rows imported into {database_path}."
-    )
+    print(f"Done. {total_rows} rows imported into {database_path}.")
 
 
 def temporary_csv_path():
@@ -60,14 +58,19 @@ def temporary_csv_path():
 def parse_args(argv=None):
     parser = argparse.ArgumentParser(
         prog="ncvoters",
-        description="Create a SQLite database from NC voter registration data.")
+        description="Create a SQLite database from NC voter registration data.",
+    )
     parser.add_argument(
-        "-o", "--output",
+        "-o",
+        "--output",
         default=OUTPUT_DB,
-        help="Path of the output SQLite database (default: %(default)s)")
+        help="Path of the output SQLite database (default: %(default)s)",
+    )
     parser.add_argument(
-        "-c", "--chunksize",
+        "-c",
+        "--chunksize",
         type=int,
         default=DEFAULT_CHUNKSIZE,
-        help="Number of records to process per chunk (default: %(default)s)")
+        help="Number of records to process per chunk (default: %(default)s)",
+    )
     return parser.parse_args(argv)
