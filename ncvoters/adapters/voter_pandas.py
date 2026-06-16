@@ -23,7 +23,7 @@ class PandasZipVoterReader:
             encoding='latin1',
             chunksize=self.chunksize,
             low_memory=False,
-            # Keep zip codes as strings so leading zeros survive and they
-            # are never coerced to a float (e.g. 27601.0).
-            dtype={'zip_code': str},
+            # Keep zip codes and phone numbers as strings so leading zeros
+            # survive and they are never coerced to a float (e.g. 27601.0).
+            dtype={'zip_code': str, 'full_phone_number': str},
         )
