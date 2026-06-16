@@ -8,7 +8,7 @@ import sqlite3
 from pathlib import Path
 
 DEFAULT_TABLE_NAME = "voters"
-DEFAULT_BATCH_SIZE = 10_000
+DEFAULT_BATCH_SIZE = 100_000
 logger = logging.getLogger(__name__)
 
 

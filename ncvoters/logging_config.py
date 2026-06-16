@@ -3,7 +3,7 @@
 
 import logging
 
-LOG_FORMAT = "%(asctime)s %(filename)s %(funcName)s %(message)s"
+LOG_FORMAT = "%(asctime)s %(filename)s:%(lineno)d %(funcName)s %(message)s"
 LOG_DATE_FORMAT = "%H:%M:%S"
 
 

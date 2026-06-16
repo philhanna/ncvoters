@@ -6,7 +6,9 @@ published statewide zip file (a tab-separated, latin1-encoded CSV).
 """
 
 import pandas as pd
+import logging
 
+logger = logging.getLogger(__name__)
 
 class PandasZipVoterReader:
     """Reads the zipped statewide CSV in memory-friendly chunks."""
