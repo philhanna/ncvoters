@@ -32,4 +32,7 @@ def create_voter_csv(
         total_rows += len(transformed)
         voter_writer.write(transformed)
 
+    # Finalize (e.g. sort the staged rows into the output file).
+    voter_writer.close()
+
     return total_rows

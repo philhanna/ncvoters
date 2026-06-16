@@ -25,9 +25,13 @@ class FakeVoterReader:
 class FakeVoterWriter:
     def __init__(self):
         self.chunks = []
+        self.closed = False
 
     def write(self, df):
         self.chunks.append(df)
+
+    def close(self):
+        self.closed = True
 
 
 def _chunk(last_names, statuses):
@@ -63,6 +67,7 @@ def test_create_voter_csv_returns_total_active_rows():
     total = create_voter_csv(layout, reader, writer, log=lambda *a: None)
 
     assert total == 3
+    assert writer.closed
 
 
 def test_create_voter_csv_writes_one_transformed_chunk_per_input_chunk():

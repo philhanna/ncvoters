@@ -31,3 +31,7 @@ class VoterWriter(Protocol):
 
     def write(self, df: pd.DataFrame) -> None:
         ...
+
+    def close(self) -> None:
+        """Finalize the output once all chunks have been written."""
+        ...
