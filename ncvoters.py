@@ -9,7 +9,6 @@ the NC State Board of Elections and is updated every Saturday.
 The file format is described at https://s3.amazonaws.com/dl.ncsbe.gov/data/layout_ncvoter.txt
 """
 
-import argparse
 import re
 import os
 import pandas as pd
@@ -100,22 +99,36 @@ def main(args):
 def build_county_map():
     """Build a map of county numbers to county names from the layout file."""
     LAYOUT_URL = "https://s3.amazonaws.com/dl.ncsbe.gov/data/layout_ncvoter.txt"
-    txt = urllib.request.urlopen(LAYOUT_URL).read()
-    lines = [line.decode('utf-8') for line in txt.splitlines()]
     county_map = {}
-
-    keep = False
-
+    
+    # Download the layout from the website
+    txt = urllib.request.urlopen(LAYOUT_URL).read()
+    
+    # Read the layout into a list of lines
+    lines = [line.decode('utf-8') for line in txt.splitlines()]
+    
+    # Finite state machine over the layout lines.
+    # The county list runs from ALAMANCE (first) to YANCEY (last).
+    
+    state = 0
     for line in lines:
-        if line.startswith("ALAMANCE"):
-            keep = True
-        if keep:
-            name, number = line.split()
-            number = int(number)
-            number = f"{number:02d}"
-            county_map[number] = name
-        if line.startswith("YANCEY") and keep:
-            break
+        match state:
+            case 0:
+                if line.startswith("ALAMANCE"):
+                    state = 1
+                    name, number = line.split()
+                    number = int(number)
+                    number = f"{number:02d}"
+                    county_map[number] = name
+            case 1:
+                name, number = line.split()
+                number = int(number)
+                number = f"{number:02d}"
+                county_map[number] = name
+                if line.startswith("YANCEY"):
+                    state = 2
+            case 2:
+                break
 
     return county_map
 
@@ -130,6 +143,7 @@ def sanitize(text):
 
 
 if __name__ == "__main__":
+  import argparse
   parser = argparse.ArgumentParser(
       description="Create a slimmed-down CSV from NC voter registration data.")
   parser.add_argument(
