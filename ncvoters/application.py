@@ -28,18 +28,20 @@ def create_voter_csv(
         log = logger.info
 
     # Create the map of county numbers to county names.
+    log.info(f"Getting the county name map...")
     county_map = parse_county_map(layout_provider.get_lines())
+    log.info(f"Got {len(county_map)} counties")
     
     # Read and process the data in chunks (so as not to exhaust memory).
     # There are about 90-95 chunks in the file at the default chunk size.
     total_rows = 0
     for i, chunk in enumerate(voter_reader.read_chunks()):
-        log(f"Processing chunk {i + 1}")
+        log.info(f"Processing chunk {i + 1}")
         transformed = transform_chunk(chunk, county_map)
         total_rows += len(transformed)
         voter_writer.write(transformed)
 
     # Finalize (e.g. sort the staged rows into the output file).
     voter_writer.close()
-
+    log.info(f"Done. Downloaded {total_rows} rows")
     return total_rows

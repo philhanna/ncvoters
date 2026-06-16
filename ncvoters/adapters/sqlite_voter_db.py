@@ -40,7 +40,9 @@ def create_sqlite_from_csv(
         logger.info("Deleted existing file: %s", db_path)
 
     with sqlite3.connect(db_path) as connection:
+        logger.info(f"Creating {db_path} database")
         with open(csv_path, encoding="utf-8", newline="") as csv_file:
+            logger.info(f"Reading {csv_path} input file")
             reader = csv.reader(csv_file)
             columns = next(reader)
 
@@ -53,9 +55,12 @@ def create_sqlite_from_csv(
             )
 
             batch = []
+            bnumber = 0
             for row in reader:
                 batch.append(row)
                 if len(batch) >= batch_size:
+                    bnumber += 1
+                    logger.info(f"Batch {bnumber}. Appending {len(batch)} rows to database")
                     connection.executemany(
                         f'INSERT INTO "{table_name}" ({quoted_names}) '
                         f"VALUES ({placeholders})",
@@ -77,9 +82,11 @@ def create_sqlite_from_csv(
 
 def create_indexes(connection, table_name):
     """Create the indexes used by common voter lookups."""
+    logger.info(f"Creating addresses index")
     connection.execute(
         f'CREATE INDEX "addresses" ON "{table_name}" ("address")'
     )
+    logger.info(f"Creating names index")
     connection.execute(
         f'CREATE INDEX "names" ON "{table_name}" '
         '("last_name", "first_name", "middle_name")'
@@ -93,4 +100,5 @@ def create_views(connection, views_dir=DEFAULT_VIEWS_DIR):
         return
 
     for sql_path in sorted(views_path.glob("*.sql")):
+        logger.info(f"Creating {sql_path} view")
         connection.executescript(sql_path.read_text(encoding="utf-8"))
