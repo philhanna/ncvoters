@@ -6,20 +6,27 @@ the port Protocols (``ncvoters.ports``) and the pure domain functions
 (``ncvoters.domain``) -- never on the concrete adapters.
 """
 
+import logging
+
 from ncvoters.domain import parse_county_map, transform_chunk
 from ncvoters.ports import LayoutProvider, VoterChunkReader, VoterWriter
+
+logger = logging.getLogger(__name__)
 
 
 def create_voter_csv(
     layout_provider: LayoutProvider,
     voter_reader: VoterChunkReader,
     voter_writer: VoterWriter,
-    log=print,
+    log=None,
 ) -> int:
     """Read voter data in chunks, transform each, and write it out.
 
     Returns the total number of (active) rows written.
     """
+    if log is None:
+        log = logger.info
+
     # Create the map of county numbers to county names.
     county_map = parse_county_map(layout_provider.get_lines())
     

@@ -2,12 +2,14 @@
 """Driven adapter: create a SQLite database from the generated CSV."""
 
 import csv
+import logging
 import os
 import sqlite3
 from pathlib import Path
 
 DEFAULT_TABLE_NAME = "voters"
 DEFAULT_BATCH_SIZE = 10_000
+logger = logging.getLogger(__name__)
 
 
 def default_views_dir():
@@ -35,7 +37,7 @@ def create_sqlite_from_csv(
     """Stream CSV rows into a SQLite table using the CSV header as columns."""
     if os.path.exists(db_path):
         os.remove(db_path)
-        print(f"Deleted existing file: {db_path}")
+        logger.info("Deleted existing file: %s", db_path)
 
     with sqlite3.connect(db_path) as connection:
         with open(csv_path, encoding="utf-8", newline="") as csv_file:

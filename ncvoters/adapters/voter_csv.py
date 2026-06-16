@@ -10,11 +10,13 @@ external merge sort, so memory stays bounded regardless of file size.
 
 import heapq
 import itertools
+import logging
 import os
 import tempfile
 
 # Maximum number of data rows held in memory while sorting a single run.
 DEFAULT_BATCH_SIZE = 1_000_000
+logger = logging.getLogger(__name__)
 
 
 class CsvVoterWriter:
@@ -34,7 +36,7 @@ class CsvVoterWriter:
         # Delete the output CSV if it already exists.
         if os.path.exists(path):
             os.remove(path)
-            print(f"Deleted existing file: {path}")
+            logger.info("Deleted existing file: %s", path)
 
     def write(self, df):
         df.to_csv(

@@ -6,6 +6,7 @@ adapters to the use case, runs it, and reports the result.
 """
 
 import argparse
+import logging
 import os
 import tempfile
 from pathlib import Path
@@ -15,6 +16,7 @@ from ncvoters.adapters.sqlite_voter_db import create_sqlite_from_csv
 from ncvoters.adapters.voter_csv import CsvVoterWriter
 from ncvoters.adapters.voter_pandas import PandasZipVoterReader
 from ncvoters.application import create_voter_csv
+from ncvoters.logging_config import configure_logging
 
 # Public S3 URL published by the NC State Board of Elections.
 URL = "https://s3.amazonaws.com/dl.ncsbe.gov/data/ncvoter_Statewide.zip"
@@ -24,9 +26,11 @@ OUTPUT_DB = "nc_voters.db"
 
 # Number of records to process per chunk.
 DEFAULT_CHUNKSIZE = 100000
+logger = logging.getLogger(__name__)
 
 
 def main(argv=None):
+    configure_logging()
     args = parse_args(argv)
     database_path = args.output
     intermediate_csv = temporary_csv_path()
@@ -41,7 +45,7 @@ def main(argv=None):
     finally:
         if os.path.exists(intermediate_csv):
             os.remove(intermediate_csv)
-    print(f"Done. {total_rows} rows imported into {database_path}.")
+    logger.info("Done. %s rows imported into %s.", total_rows, database_path)
 
 
 def temporary_csv_path():
