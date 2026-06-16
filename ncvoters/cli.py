@@ -26,7 +26,7 @@ def main(argv=None):
     args = parse_args(argv)
 
     layout_provider = HttpLayoutProvider()
-    voter_reader = PandasZipVoterReader(args.url, args.chunksize)
+    voter_reader = PandasZipVoterReader(URL, args.chunksize)
     voter_writer = CsvVoterWriter(args.output)
 
     total_rows = create_voter_csv(layout_provider, voter_reader, voter_writer)
@@ -37,11 +37,6 @@ def parse_args(argv=None):
     parser = argparse.ArgumentParser(
         prog="ncvoters",
         description="Create a slimmed-down CSV from NC voter registration data.")
-    parser.add_argument(
-        "-u", "--url",
-        default=URL,
-        help="URL of the statewide voter registration zip file "
-             "(default: %(default)s)")
     parser.add_argument(
         "-o", "--output",
         default=OUTPUT_CSV,
