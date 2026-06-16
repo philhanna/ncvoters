@@ -21,12 +21,21 @@ from ncvoters.logging_config import configure_logging
 # Public S3 URL published by the NC State Board of Elections.
 URL = "https://s3.amazonaws.com/dl.ncsbe.gov/data/ncvoter_Statewide.zip"
 
-# Default SQLite output path.
-OUTPUT_DB = "nc_voters.db"
-
 # Number of records to process per chunk.
 DEFAULT_CHUNKSIZE = 100000
 logger = logging.getLogger(__name__)
+
+
+def default_output_db():
+    """Return the default database path on the current user's Desktop."""
+    if os.name == "nt":
+        desktop = Path(os.environ.get("USERPROFILE", Path.home())) / "Desktop"
+    else:
+        desktop = Path.home() / "Desktop"
+    return str(desktop / "nc_voters.db")
+
+
+OUTPUT_DB = default_output_db()
 
 
 def main(argv=None):
