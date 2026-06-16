@@ -6,6 +6,8 @@ adapters to the use case, runs it, and reports the result.
 """
 
 import argparse
+import os
+import tempfile
 from pathlib import Path
 
 from ncvoters.adapters.layout_http import HttpLayoutProvider
@@ -17,8 +19,8 @@ from ncvoters.application import create_voter_csv
 # Public S3 URL published by the NC State Board of Elections.
 URL = "https://s3.amazonaws.com/dl.ncsbe.gov/data/ncvoter_Statewide.zip"
 
-# Output csv file that will contain our slimmed-down version of the database.
-OUTPUT_CSV = "nc_voters.csv"
+# Default SQLite output path.
+OUTPUT_DB = "nc_voters.sqlite3"
 
 # Number of records to process per chunk.
 DEFAULT_CHUNKSIZE = 100000
@@ -26,39 +28,46 @@ DEFAULT_CHUNKSIZE = 100000
 
 def main(argv=None):
     args = parse_args(argv)
-    database_path = args.database or default_database_path(args.output)
+    database_path = args.output
+    intermediate_csv = temporary_csv_path()
 
     layout_provider = HttpLayoutProvider()
     voter_reader = PandasZipVoterReader(URL, args.chunksize)
-    voter_writer = CsvVoterWriter(args.output)
+    voter_writer = CsvVoterWriter(intermediate_csv)
 
-    total_rows = create_voter_csv(layout_provider, voter_reader, voter_writer)
-    create_sqlite_from_csv(args.output, database_path)
+    try:
+        total_rows = create_voter_csv(layout_provider, voter_reader, voter_writer)
+        create_sqlite_from_csv(intermediate_csv, database_path)
+    finally:
+        if os.path.exists(intermediate_csv):
+            os.remove(intermediate_csv)
     print(
-        f"Done. {total_rows} rows imported into {args.output} "
-        f"and {database_path}."
+        f"Done. {total_rows} rows imported into {database_path}."
     )
 
 
-def default_database_path(csv_path):
-    return str(Path(csv_path).with_suffix(".sqlite3"))
+def temporary_csv_path():
+    db_stem = "nc_voters"
+    with tempfile.NamedTemporaryFile(
+        prefix=f"{db_stem}.",
+        suffix=".csv",
+        dir=tempfile.gettempdir(),
+        delete=False,
+    ) as temp_file:
+        return temp_file.name
 
 
 def parse_args(argv=None):
     parser = argparse.ArgumentParser(
         prog="ncvoters",
-        description="Create a slimmed-down CSV from NC voter registration data.")
+        description="Create a SQLite database from NC voter registration data.")
     parser.add_argument(
         "-o", "--output",
-        default=OUTPUT_CSV,
-        help="Path of the output CSV file (default: %(default)s)")
+        default=OUTPUT_DB,
+        help="Path of the output SQLite database (default: %(default)s)")
     parser.add_argument(
         "-c", "--chunksize",
         type=int,
         default=DEFAULT_CHUNKSIZE,
         help="Number of records to process per chunk (default: %(default)s)")
-    parser.add_argument(
-        "-d", "--database",
-        help="Path of the output SQLite database "
-             "(default: OUTPUT with .sqlite3 suffix)")
     return parser.parse_args(argv)
