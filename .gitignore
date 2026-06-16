@@ -1,0 +1,14 @@
+*.swp
+*.pyc
+__pycache__/
+.vscode/
+.venv/
+venv/
+env/
+.env
+build/
+dist/
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ipynb_checkpoints/
