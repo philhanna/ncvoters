@@ -14,6 +14,6 @@ The package follows a ports-and-adapters (hexagonal) architecture:
   * ``domain``      -- pure models and transformation services
   * ``ports``       -- Protocol definitions the use case depends on
   * ``application`` -- the ``create_voter_csv`` use case
-  * ``adapters``    -- concrete driven adapters (HTTP, pandas, CSV)
+  * ``adapters``    -- concrete driven adapters (HTTP, pandas, CSV, SQLite)
   * ``cli``         -- the driving adapter (argparse entry point)
 """

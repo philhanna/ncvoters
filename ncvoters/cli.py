@@ -6,8 +6,10 @@ adapters to the use case, runs it, and reports the result.
 """
 
 import argparse
+from pathlib import Path
 
 from ncvoters.adapters.layout_http import HttpLayoutProvider
+from ncvoters.adapters.sqlite_voter_db import create_sqlite_from_csv
 from ncvoters.adapters.voter_csv import CsvVoterWriter
 from ncvoters.adapters.voter_pandas import PandasZipVoterReader
 from ncvoters.application import create_voter_csv
@@ -24,13 +26,22 @@ DEFAULT_CHUNKSIZE = 100000
 
 def main(argv=None):
     args = parse_args(argv)
+    database_path = args.database or default_database_path(args.output)
 
     layout_provider = HttpLayoutProvider()
     voter_reader = PandasZipVoterReader(URL, args.chunksize)
     voter_writer = CsvVoterWriter(args.output)
 
     total_rows = create_voter_csv(layout_provider, voter_reader, voter_writer)
-    print(f"Done. {total_rows} rows imported into {args.output}.")
+    create_sqlite_from_csv(args.output, database_path)
+    print(
+        f"Done. {total_rows} rows imported into {args.output} "
+        f"and {database_path}."
+    )
+
+
+def default_database_path(csv_path):
+    return str(Path(csv_path).with_suffix(".sqlite3"))
 
 
 def parse_args(argv=None):
@@ -46,4 +57,8 @@ def parse_args(argv=None):
         type=int,
         default=DEFAULT_CHUNKSIZE,
         help="Number of records to process per chunk (default: %(default)s)")
+    parser.add_argument(
+        "-d", "--database",
+        help="Path of the output SQLite database "
+             "(default: OUTPUT with .sqlite3 suffix)")
     return parser.parse_args(argv)
