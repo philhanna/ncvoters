@@ -57,9 +57,10 @@ def transform_chunk(chunk, county_map):
         if col in chunk.columns:
             chunk[col] = chunk[col].apply(sanitize)
 
-    # Add county names.  Convert county_id to string so the keys match
-    # county_map's string keys; missing keys map to NaN.
-    chunk['county_id'] = chunk['county_id'].astype(str)
+    # Add county names.  Format county_id as a zero-padded 2-digit string so
+    # the keys match county_map's keys (e.g. 1 -> "01"); missing keys map to
+    # NaN.
+    chunk['county_id'] = chunk['county_id'].astype(int).map(lambda n: f"{n:02d}")
     chunk['county'] = chunk['county_id'].map(county_map)
 
     # Rename columns and extract the output subset.
