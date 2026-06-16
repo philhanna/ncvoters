@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ncvoters"
+version = "0.1.0"
+description = "Create a slimmed-down CSV from NC voter registration data."
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "pandas",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+]
+
+[project.scripts]
+ncvoters = "ncvoters.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["ncvoters*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
