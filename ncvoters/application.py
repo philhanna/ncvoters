@@ -22,9 +22,7 @@ def create_voter_csv(
     """
     # Create the map of county numbers to county names.
     county_map = parse_county_map(layout_provider.get_lines())
-    log(f"Found {len(county_map)} counties")
-    log(county_map)
-
+    
     # Read and process the data in chunks (so as not to exhaust memory).
     # There are about 90-95 chunks in the file at the default chunk size.
     total_rows = 0
