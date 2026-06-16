@@ -24,24 +24,23 @@ def create_voter_csv(
 
     Returns the total number of (active) rows written.
     """
-    if log is None:
-        log = logger.info
-
+    logger = logging.getLogger(__name__)
+    
     # Create the map of county numbers to county names.
-    log.info(f"Getting the county name map...")
+    logger.info(f"Getting the county name map...")
     county_map = parse_county_map(layout_provider.get_lines())
-    log.info(f"Got {len(county_map)} counties")
+    logger.info(f"Got {len(county_map)} counties")
     
     # Read and process the data in chunks (so as not to exhaust memory).
     # There are about 90-95 chunks in the file at the default chunk size.
     total_rows = 0
     for i, chunk in enumerate(voter_reader.read_chunks()):
-        log.info(f"Processing chunk {i + 1}")
+        logger.info(f"Processing chunk {i + 1}")
         transformed = transform_chunk(chunk, county_map)
         total_rows += len(transformed)
         voter_writer.write(transformed)
 
     # Finalize (e.g. sort the staged rows into the output file).
     voter_writer.close()
-    log.info(f"Done. Downloaded {total_rows} rows")
+    logger.info(f"Done. Downloaded {total_rows} rows")
     return total_rows
