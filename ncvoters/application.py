@@ -34,6 +34,7 @@ def create_voter_csv(
     # Read and process the data in chunks (so as not to exhaust memory).
     # There are about 90-95 chunks in the file at the default chunk size.
     total_rows = 0
+    logger.info(f"Downloading latest data...")
     for i, chunk in enumerate(voter_reader.read_chunks()):
         logger.info(f"Processing chunk {i + 1}")
         transformed = transform_chunk(chunk, county_map)
