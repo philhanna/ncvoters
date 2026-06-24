@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 class PandasZipVoterReader:
     """Reads the zipped statewide CSV in memory-friendly chunks."""
 
-    def __init__(self, url, chunksize=100000):
+    def __init__(self, url, chunksize=100_000):
         self.url = url
         self.chunksize = chunksize
 
