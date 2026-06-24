@@ -22,7 +22,7 @@ from ncvoters.logging_config import configure_logging
 URL = "https://s3.amazonaws.com/dl.ncsbe.gov/data/ncvoter_Statewide.zip"
 
 # Number of records to process per chunk.
-DEFAULT_CHUNKSIZE = 100000
+DEFAULT_CHUNKSIZE = 100_000
 logger = logging.getLogger(__name__)
 
 
