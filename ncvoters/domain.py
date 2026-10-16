@@ -32,13 +32,18 @@ COLUMN_RENAMES = {
     "gender_code": "gender",
     "birth_year": "birth_year",
     "age_at_year_end": "age",
+    "nc_senate_abbrv": "ncsenate",
+    "nc_house_abbrv": "nchouse",
+    "county_id": "county_id",
+    "voter_reg_number": "voter_id",
 }
 
 # The subset of (renamed) columns kept in the output, in order.
 OUTPUT_COLUMNS = [
     'last_name', 'first_name', 'middle_name', 'address', 'city',
     'county', 'state', 'zip', 'phone', 'race', 'party', 'gender',
-    'birth_year', 'age', 'birth_state',
+    'birth_year', 'age', 'birth_state', 'ncsenate', 'nchouse',
+    'county_id', 'voter_id',
 ]
 
 
