@@ -53,6 +53,9 @@ def _chunk(last_names, statuses):
         "birth_year": [2000] * n,
         "age_at_year_end": [26] * n,
         "birth_state": ["NC"] * n,
+        "nc_senate_abbrv": ["24"] * n,
+        "nc_house_abbrv": ["63"] * n,
+        "voter_reg_number": [str(i) for i in range(n)],
     })
 
 

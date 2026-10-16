@@ -53,6 +53,9 @@ def _raw_chunk():
         "birth_year": [1980, 1, 1990],
         "age_at_year_end": [46, 1, 36],
         "birth_state": ["NC", "NC", "VA"],
+        "nc_senate_abbrv": ["15", "24", "16"],
+        "nc_house_abbrv": ["34", "63", "41"],
+        "voter_reg_number": ["000001", "000002", "000003"],
     })
 
 
@@ -89,3 +92,24 @@ def test_transform_chunk_does_not_mutate_input():
     before = raw.copy()
     transform_chunk(raw, {"92": "WAKE"})
     pd.testing.assert_frame_equal(raw, before)
+
+
+def test_transform_chunk_converts_districts_to_integers():
+    out = transform_chunk(_raw_chunk(), {"92": "WAKE"})
+    for col in ["nc_senate", "nc_house"]:
+        assert out[col].dtype == "Int64"
+    assert list(out["nc_senate"]) == [15, 16]
+
+
+def test_transform_chunk_keeps_voter_id_as_string():
+    out = transform_chunk(_raw_chunk(), {"92": "WAKE"})
+    assert list(out["voter_id"]) == ["000001", "000003"]
+
+
+def test_transform_chunk_keeps_blank_ids_empty():
+    raw = _raw_chunk()
+    raw.loc[0, "nc_house_abbrv"] = None
+    out = transform_chunk(raw, {"92": "WAKE"})
+    assert out["nc_house"].dtype == "Int64"
+    assert pd.isna(out["nc_house"].iloc[0])
+    assert out["nc_house"].iloc[1] == 41

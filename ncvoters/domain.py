@@ -32,17 +32,23 @@ COLUMN_RENAMES = {
     "gender_code": "gender",
     "birth_year": "birth_year",
     "age_at_year_end": "age",
-    "nc_senate_abbrv": "ncsenate",
-    "nc_house_abbrv": "nchouse",
+    "nc_senate_abbrv": "nc_senate",
+    "nc_house_abbrv": "nc_house",
     "county_id": "county_id",
     "voter_reg_number": "voter_id",
 }
+
+# Source columns converted to integers.
+INTEGER_COLUMNS = [
+    'nc_senate_abbrv',
+    'nc_house_abbrv',
+]
 
 # The subset of (renamed) columns kept in the output, in order.
 OUTPUT_COLUMNS = [
     'last_name', 'first_name', 'middle_name', 'address', 'city',
     'county', 'state', 'zip', 'phone', 'race', 'party', 'gender',
-    'birth_year', 'age', 'birth_state', 'ncsenate', 'nchouse',
+    'birth_year', 'age', 'birth_state', 'nc_senate', 'nc_house',
     'county_id', 'voter_id',
 ]
 
@@ -67,6 +73,11 @@ def transform_chunk(chunk, county_map):
     # NaN.
     chunk['county_id'] = chunk['county_id'].astype(int).map(lambda n: f"{n:02d}")
     chunk['county'] = chunk['county_id'].map(county_map)
+
+    # Treat district numbers as integers.  The nullable Int64 type
+    # keeps blanks empty instead of forcing the column to float (15.0).
+    for col in INTEGER_COLUMNS:
+        chunk[col] = pd.to_numeric(chunk[col]).astype('Int64')
 
     # Rename columns and extract the output subset.
     chunk = chunk.rename(columns=COLUMN_RENAMES)
