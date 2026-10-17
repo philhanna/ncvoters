@@ -35,7 +35,7 @@ COLUMN_RENAMES = {
     "nc_senate_abbrv": "nc_senate",
     "nc_house_abbrv": "nc_house",
     "county_id": "county_id",
-    "voter_reg_number": "voter_id",
+    "voter_reg_num": "voter_id",
 }
 
 # Source columns converted to integers.

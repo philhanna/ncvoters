@@ -55,7 +55,7 @@ def _chunk(last_names, statuses):
         "birth_state": ["NC"] * n,
         "nc_senate_abbrv": ["24"] * n,
         "nc_house_abbrv": ["63"] * n,
-        "voter_reg_number": [str(i) for i in range(n)],
+        "voter_reg_num": [str(i) for i in range(n)],
     })
 
 

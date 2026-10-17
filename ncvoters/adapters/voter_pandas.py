@@ -31,6 +31,6 @@ class PandasZipVoterReader:
             dtype={
                 'zip_code': str,
                 'full_phone_number': str,
-                'voter_reg_number': str,
+                'voter_reg_num': str,
             },
         )

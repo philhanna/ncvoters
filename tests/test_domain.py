@@ -55,7 +55,7 @@ def _raw_chunk():
         "birth_state": ["NC", "NC", "VA"],
         "nc_senate_abbrv": ["15", "24", "16"],
         "nc_house_abbrv": ["34", "63", "41"],
-        "voter_reg_number": ["000001", "000002", "000003"],
+        "voter_reg_num": ["000001", "000002", "000003"],
     })
 
 
